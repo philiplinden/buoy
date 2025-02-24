@@ -29,6 +29,7 @@ impl Plugin for CorePhysicsPlugin {
             atmosphere::plugin,
             forces::plugin,
             grid::plugin,
+            fluid_volume::plugin,
             time::plugin,
         ));
     }
@@ -42,7 +43,6 @@ impl Plugin for CoreSystemsPlugin {
         app.init_state::<SimState>();
         app.add_plugins((
             format::plugin,
-            scene::plugin,
         ));
     }
 }

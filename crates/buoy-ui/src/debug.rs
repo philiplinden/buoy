@@ -60,7 +60,6 @@ fn ui_text_system(
     time: Res<Time>,
     origin: Query<(Entity, GridTransformReadOnly<Precision>), With<FloatingOrigin>>,
     camera: Query<&CameraController>,
-    paths: Query<&TransformPath>,
 ) {
     let (origin_entity, origin_pos) = origin.single();
     let translation = origin_pos.transform.translation;
@@ -97,17 +96,9 @@ fn ui_text_system(
         format!("Speed: {:.2e} m/s", speed)
     };
 
-    let path_info: Vec<String> = paths.iter()
-        .enumerate()
-        .map(|(i, path)| {
-            format!("Path {}: {} points", i, path.points.len())
-        })
-        .collect();
-
     let mut debug_text = debug_text.single_mut();
     debug_text.0.0 = format!(
-        "{grid_text}\n{translation_text}\n\n{real_position_f64_text}\n{real_position_f32_text}\n\n{camera_text}\n\nPaths:\n{}",
-        path_info.join("\n")
+        "{grid_text}\n{translation_text}\n\n{real_position_f64_text}\n{real_position_f32_text}\n\n{camera_text}"
     );
 }
 pub struct TransformPathPlugin;
