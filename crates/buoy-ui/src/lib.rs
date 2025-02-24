@@ -2,6 +2,7 @@ mod controls;
 mod colors;
 mod camera;
 mod lighting;
+mod scene;
 
 #[cfg(feature = "dev")]
 mod debug;
@@ -39,6 +40,7 @@ impl Plugin for AppPlugins {
             controls::plugin,
             camera::plugin,
             lighting::plugin,
+            scene::plugin,
         ));
 
         #[cfg(feature = "dev")]

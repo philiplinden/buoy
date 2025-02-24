@@ -63,17 +63,3 @@ fn update_gravity(mut query: Query<(&mut GravityScale, &Position)>) {
         gravity_scale.0 = scale_gravity(position.y);
     }
 }
-
-// fn apply_buoyancy(
-//     mut query: Query<(&mut ExternalForce, &Position, &GravityScale, &Collider)>,
-//     atmosphere: Res<Atmosphere>,
-//     gravity: Res<Gravity>,
-// ) -> Vec3 {
-//     for (mut external_force, position, gravity_scale, collider) in query.iter_mut() {
-//         let gravity_acceleration = gravity.0 * gravity_scale.0;
-//         let ambient_density = atmosphere.density(position.y);
-//         let displaced_volume = collider.volume();
-//         let buoyancy_force = buoyancy(gravity_acceleration, displaced_volume, ambient_density);
-//         external_force.apply_force(buoyancy_force);
-//     }
-// }

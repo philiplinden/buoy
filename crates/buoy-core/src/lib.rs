@@ -7,8 +7,8 @@ pub mod format;
 pub mod geometry;
 pub mod grid;
 pub mod ideal_gas;
-pub mod scene;
 pub mod time;
+pub mod fluid_volume;
 
 pub use uom as units;
 
@@ -19,6 +19,7 @@ pub mod prelude {
         forces::{drag, scale_gravity},
         grid::{Precision, RootGrid, GRID_CELL_EDGE_LENGTH_METERS},
         ideal_gas::{GasSpecies, IdealGas},
+        fluid_volume::{FluidVolume, FluidVolumeCell, FluidVolumeGrid},
     };
     pub use uom::si::{
         f32::{Mass, MassDensity, MolarMass, Pressure, ThermodynamicTemperature, Volume},
@@ -32,3 +33,5 @@ pub mod prelude {
 }
 
 pub use core::BuoyPlugin;
+
+pub use fluid_volume::{FluidVolumeBuilder, FluidVolumeCell, DefaultFluidVolumeSettings};
