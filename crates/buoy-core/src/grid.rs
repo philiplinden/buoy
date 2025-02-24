@@ -3,6 +3,27 @@
 //! This module implements a hierarchical grid system using BigSpace for large-scale
 //! simulations. The root grid contains the entire world, while child grids can be
 //! used for specific volumes like atmospheres or oceans.
+//!
+//! Use child grids to specify large environment volumes, like atmosphere or ocean.
+//! New spatial entities should be spawned with their own local grids.
+//! Objects can move across environment boundaries so long as they are related
+//! along the same branch of the hierarchy.
+//!
+//! The switching threshold (set to 0.0 here) determines when grid cells switch.
+//! A non-zero threshold creates a "buffer zone" around cell boundaries to prevent
+//! rapid switching when objects oscillate near the edge. For example:
+//!
+//! ```text
+//! Cell 1          |          Cell 2
+//!                 |
+//!         <--🚀-->|   (threshold = 0.0)
+//!                 |
+//!     [===buffer zone===]   (threshold > 0.0)
+//! ```
+//!
+//! With threshold = 0.0, the object triggers an immediate cell switch when crossing
+//! the boundary. A positive threshold allows some movement past the boundary before
+//! switching, preventing jitter for objects that frequently cross cell edges.
 
 use bevy::prelude::*;
 use big_space::prelude::*;
