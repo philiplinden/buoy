@@ -204,8 +204,10 @@ def simulate_trajectory(
         Tuple of (positions, velocities, forces) arrays containing state history
     """
     states = []
+    duration = u.time(duration)
+    dt = u.time(dt)
     state = State(
-        0.0,
+        u.time(0.0),
         body.position,
         body.velocity,
         body.acceleration(body.position, body.velocity),

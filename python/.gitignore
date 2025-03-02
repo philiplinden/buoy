@@ -63,3 +63,7 @@ uv.lock
 # OS specific files
 .DS_Store
 Thumbs.db
+
+
+# Plotting
+plot.png

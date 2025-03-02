@@ -11,6 +11,7 @@ dependencies = [
     "pydantic>=2.10.6",
     "forallpeople>=2.7.1",
     "scipy>=1.15.2",
+    "matplotlib>=3.10.1",
 ]
 
 [project.scripts]

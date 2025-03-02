@@ -333,7 +333,7 @@ def simulate_body(
     displaced_volume: float = typer.Option(1.0, help="Volume of displaced fluid (m³)"),
     duration: float = typer.Option(60.0, help="Simulation duration (s)"),
     dt: float = typer.Option(0.1, help="Time step (s)"),
-    show_forces: bool = typer.Option(False, help="Show forces instead of accelerations"),
+    show_plot: bool = typer.Option(False, help="Show plot of results"),
 ):
     """Simulate rigid body motion with drag and buoyancy."""
     # Create the rigid body
@@ -355,10 +355,7 @@ def simulate_body(
     table.add_column("Time", justify="right")
     table.add_column("Position", justify="right")
     table.add_column("Velocity", justify="right")
-    if show_forces:
-        table.add_column("Net Force", justify="right")
-    else:
-        table.add_column("Acceleration", justify="right")
+    table.add_column("Acceleration", justify="right")
     
     # Print simulation parameters
     params = "Simulation Parameters:\n"
@@ -411,6 +408,40 @@ def simulate_body(
         title="Simulation Results"
     )
     console.print(final)
+    
+    if show_plot:
+        import matplotlib.pyplot as plt
+
+        # Extract data for plotting
+        times = [state.time.value for state in states]
+        positions = [state.position.value for state in states]
+        velocities = [state.velocity.value for state in states]
+        accelerations = [state.acceleration.value for state in states]
+
+        # Create subplots
+        _, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 15))
+        
+        # Plot position
+        ax1.scatter(times, positions)
+        ax1.set_title("Position")
+        ax1.set_xlabel("Time (s)")
+        ax1.set_ylabel("Position (m)")
+        
+        # Plot velocity
+        ax2.scatter(times, velocities)
+        ax2.set_title("Velocity")
+        ax2.set_xlabel("Time (s)")
+        ax2.set_ylabel("Velocity (m/s)")
+        
+        # Plot acceleration
+        ax3.scatter(times, accelerations)
+        ax3.set_title("Acceleration")
+        ax3.set_xlabel("Time (s)")
+        ax3.set_ylabel("Acceleration (m/s²)")
+        
+        # Adjust layout and show plot
+        plt.tight_layout()
+        plt.savefig("plot.png")
 
 
 if __name__ == "__main__":
