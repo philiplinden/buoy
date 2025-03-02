@@ -2,7 +2,7 @@ import numpy as np
 import forallpeople as si
 from . import constants as c
 from . import units as u
-from .ideal_gas import speed_of_sound, Gas, get_gas_properties
+from . import ideal_gas as gas
 
 
 class Atmosphere:
@@ -73,7 +73,7 @@ class Atmosphere:
             Density as a quantity in kg/m³.
         """
         T, P = pressure_temperature_at_altitude(altitude)
-        return u.density(T, P, Gas.AIR)
+        return gas.density(T, P, gas.Gas.AIR)
 
     def speed_of_sound(self, altitude):
         """
@@ -86,7 +86,7 @@ class Atmosphere:
             Speed of sound as a quantity in m/s.
         """
         T, _ = pressure_temperature_at_altitude(altitude)
-        return speed_of_sound(T, Gas.AIR)
+        return gas.speed_of_sound(T, gas.Gas.AIR)
 
     def properties(self, altitude):
         """
@@ -118,12 +118,12 @@ class Atmosphere:
     @staticmethod
     def standard_density():
         """Standard sea level density."""
-        return u.density(Atmosphere.T0, Atmosphere.P0, Gas.AIR)
+        return gas.density(Atmosphere.T0, Atmosphere.P0, gas.Gas.AIR)
 
     @staticmethod
     def standard_speed_of_sound():
         """Standard sea level speed of sound."""
-        return speed_of_sound(Atmosphere.T0, Gas.AIR)
+        return gas.speed_of_sound(Atmosphere.T0, gas.Gas.AIR)
 
 
 def geometric_to_geopotential(h):
@@ -155,7 +155,7 @@ def pressure_temperature_at_altitude(h):
     P = Atmosphere.P0
 
     # Get the specific gas constant for air
-    R_air = Gas.AIR.value.gas_constant
+    R_air = gas.Gas.AIR.value.gas_constant
 
     # Process each atmospheric layer sequentially.
     for h_base, h_top, L in Atmosphere.layers:
@@ -197,8 +197,8 @@ def us_standard_atmosphere(h):
     The outputs are provided as quantities with appropriate units.
     """
     T, P = pressure_temperature_at_altitude(h)
-    rho = u.density(T, P, Gas.AIR)
-    a = u.speed_of_sound(T, Gas.AIR)
+    rho = gas.density(T, P, gas.Gas.AIR)
+    a = gas.speed_of_sound(T, gas.Gas.AIR)
     return {
         "temperature": T,
         "pressure": P,
@@ -242,14 +242,14 @@ if __name__ == "__main__":
     T0 = Atmosphere.T0
     P0 = Atmosphere.P0
 
-    air_props = get_gas_properties(Gas.AIR)
-    helium_props = get_gas_properties(Gas.HELIUM)
+    air_props = gas.get_gas_properties(gas.Gas.AIR)
+    helium_props = gas.get_gas_properties(gas.Gas.HELIUM)
 
-    air_density = u.density(T0, P0, Gas.AIR)
-    helium_density = u.density(T0, P0, Gas.HELIUM)
+    air_density = gas.density(T0, P0, gas.Gas.AIR)
+    helium_density = gas.density(T0, P0, gas.Gas.HELIUM)
 
-    air_speed = speed_of_sound(T0, Gas.AIR)
-    helium_speed = speed_of_sound(T0, Gas.HELIUM)
+    air_speed = gas.speed_of_sound(T0, gas.Gas.AIR)
+    helium_speed = gas.speed_of_sound(T0, gas.Gas.HELIUM)
 
     print(
         ", ".join(

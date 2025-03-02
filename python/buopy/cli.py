@@ -9,9 +9,10 @@ from rich.panel import Panel
 from typing import Optional, List
 from . import __version__
 from . import constants as c
+from . import units as u
 from .atmosphere import Atmosphere
-from .forces import gravity, drag, buoyancy
 from .ideal_gas import Gas, get_gas_properties, density, speed_of_sound
+from .dynamics import RigidBody, simulate_trajectory, gravity, drag, buoyancy
 
 console = Console()
 app = typer.Typer(
@@ -22,10 +23,12 @@ app = typer.Typer(
 atmosphere_app = typer.Typer(help="Atmosphere related commands")
 forces_app = typer.Typer(help="Forces related commands")
 gas_app = typer.Typer(help="Ideal gas related commands")
+dynamics_app = typer.Typer(help="Rigid body dynamics commands")
 
-app.add_typer(atmosphere_app, name="atm")
+app.add_typer(atmosphere_app, name="atmo")
 app.add_typer(forces_app, name="force")
 app.add_typer(gas_app, name="gas")
+app.add_typer(dynamics_app, name="dynamics")
 
 
 def version_callback(value: bool):
@@ -60,7 +63,7 @@ def atmosphere_profile(
     atm = Atmosphere()
     
     table = Table(title="Atmospheric Properties at Different Altitudes")
-    table.add_column("Altitude (m)", justify="right")
+    table.add_column("Altitude  ", justify="right")
     table.add_column("Temperature", justify="right")
     table.add_column("Pressure", justify="right")
     table.add_column("Density", justify="right")
@@ -222,7 +225,7 @@ def show_buoyancy(
     volume_qty = volume * si.m**3
     
     # Calculate buoyancy force
-    buoyancy_force = buoyancy(g, volume_qty, density)
+    buoyancy_force = buoyancy(altitude, volume_qty, density)
     
     # Create rich panel to display results
     buoyancy_mag = np.linalg.norm(buoyancy_force)
@@ -317,6 +320,97 @@ def calculate_sound_speed(
         
     except KeyError:
         console.print(f"[bold red]Error:[/bold red] Gas '{gas_name}' not found. Available gases: {', '.join([g.name for g in Gas])}")
+
+
+# Add dynamics commands
+@dynamics_app.command("simulate")
+def simulate_body(
+    mass: float = typer.Option(1.0, help="Mass of the body (kg)"),
+    init_y: float = typer.Option(0.0, help="Initial y position (m)"),
+    init_vy: float = typer.Option(0.0, help="Initial y velocity (m/s)"),
+    drag_coef: float = typer.Option(0.47, help="Drag coefficient"),
+    drag_area: float = typer.Option(1.0, help="Reference area for drag (m²)"),
+    displaced_volume: float = typer.Option(1.0, help="Volume of displaced fluid (m³)"),
+    duration: float = typer.Option(60.0, help="Simulation duration (s)"),
+    dt: float = typer.Option(0.1, help="Time step (s)"),
+    show_forces: bool = typer.Option(False, help="Show forces instead of accelerations"),
+):
+    """Simulate rigid body motion with drag and buoyancy."""
+    # Create the rigid body
+    body = RigidBody(
+        mass=mass,
+        position=init_y,
+        velocity=init_vy,
+        drag_coefficient=drag_coef,
+        drag_area=drag_area,
+        displaced_volume=displaced_volume,
+    )
+    dt = u.time(dt)
+    
+    # Run simulation
+    states = simulate_trajectory(body, duration, dt)
+    
+    # Create results table
+    table = Table(title=f"Rigid Body Simulation Results (dt={dt})")
+    table.add_column("Time", justify="right")
+    table.add_column("Position", justify="right")
+    table.add_column("Velocity", justify="right")
+    if show_forces:
+        table.add_column("Net Force", justify="right")
+    else:
+        table.add_column("Acceleration", justify="right")
+    
+    # Print simulation parameters
+    params = "Simulation Parameters:\n"
+    params += f"  Mass: {mass} kg\n"
+    params += f"  Initial position: {init_y} m\n"
+    params += f"  Initial velocity: {init_vy} m/s\n"
+    params += f"  Drag coefficient: {drag_coef}\n"
+    params += f"  Drag area: {drag_area} m²\n"
+    params += f"  Displaced volume: {displaced_volume} m³\n"
+    params += f"  Duration: {duration} s"
+
+    console.print(Panel(params, title="Simulation Setup"))
+    
+    # Add rows for first 5 and last 5 indices
+    total_samples = len(states)
+    
+    # First 5 indices
+    for i in range(min(5, total_samples)):
+        table.add_row(
+            f"{states[i].time}",
+            f"{states[i].position}",
+            f"{states[i].velocity}",
+            f"{states[i].acceleration}"
+        )
+    
+    # Add separator row if we have more than 5 samples
+    if total_samples > 10:
+        table.add_row("...", "...", "...", "...")
+    
+    # Last 5 indices (if we have more than 5 samples)
+    if total_samples > 5:
+        start_idx = max(5, total_samples - 5)
+        for i in range(start_idx, total_samples):
+            table.add_row(
+                f"{states[i].time}",
+                f"{states[i].position}",
+                f"{states[i].velocity}",
+                f"{states[i].acceleration}"
+            )
+
+    console.print(table)
+    
+    # Print final state summary
+    final = Panel(
+        f"Final State:\n"
+        f"  Time: {states[-1].time}\n"
+        f"  Position: {states[-1].position}\n"
+        f"  Velocity: {states[-1].velocity}\n"
+        f"  Acceleration: {states[-1].acceleration}",
+        title="Simulation Results"
+    )
+    console.print(final)
 
 
 if __name__ == "__main__":

@@ -71,3 +71,19 @@ def force(F):
     if not hasattr(F, "to"):
         return F * si.N
     return F
+
+
+def mass(m):
+    """Convert a float to a quantity with units of kilograms, or preserve the
+    existing units."""
+    if not hasattr(m, "to"):
+        return m * si.kg
+    return m
+
+
+def time(t):
+    """Convert a float to a quantity with units of seconds, or preserve the
+    existing units."""
+    if not hasattr(t, "to"):
+        return t * si.s
+    return t
