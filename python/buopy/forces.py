@@ -1,7 +1,7 @@
 import numpy as np
 import forallpeople as si
 from . import constants as c
-from .constants import meters
+from . import units as u
 from .atmosphere import Atmosphere
 
 
@@ -15,11 +15,8 @@ def gravity(altitude):
     Returns:
         Fraction of standard gravity (dimensionless float).
     """
-    # Convert altitude to a quantity in meters if needed
-    altitude = meters(altitude)
-    
     # Calculate the gravity scale
-    scale = c.EARTH_RADIUS / (c.EARTH_RADIUS + altitude)
+    scale = c.EARTH_RADIUS / (c.EARTH_RADIUS + u.length(altitude))
     return scale * c.STANDARD_GRAVITY
 
 
@@ -41,15 +38,11 @@ def drag(
     Returns:
         3D force vector in Newtons.
     """
-    # Extract magnitude values
-    density_value = ambient_density.to(si.kg/si.m**3).magnitude
-    area_value = drag_area.to(si.m**2).magnitude
-    
     # Calculate velocity magnitude
     velocity_magnitude = np.linalg.norm(velocity)
     
     # Calculate drag force
-    force_magnitude = -0.5 * drag_coefficient * density_value * area_value * velocity_magnitude
+    force_magnitude = -0.5 * drag_coefficient * ambient_density * drag_area * velocity_magnitude
     
     # Force direction is opposite to velocity
     if velocity_magnitude > 0:
@@ -77,17 +70,12 @@ def buoyancy(
     Returns:
         3D force vector in Newtons, pointing upward.
     """
-    gravity_acceleration = c.m_per_s2(gravity_acceleration)
-    displaced_volume = c.m3(displaced_volume)
-    ambient_density = c.kg_per_m3(ambient_density)
-    
-    # Extract magnitude values
-    g_value = gravity_acceleration.to(si.m/si.s**2).magnitude
-    volume_value = displaced_volume.to(si.m**3).magnitude
-    density_value = ambient_density.to(si.kg/si.m**3).magnitude
-    
+    gravity_acceleration = u.acceleration(gravity_acceleration)
+    displaced_volume = u.volume(displaced_volume)
+    ambient_density = u.density(ambient_density)
+
     # Calculate buoyancy force magnitude
-    force_magnitude = volume_value * density_value * g_value
+    force_magnitude = displaced_volume * ambient_density * gravity_acceleration
     
     # Force direction is upward
     force = np.array([0, force_magnitude, 0])

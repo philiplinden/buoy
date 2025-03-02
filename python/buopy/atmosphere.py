@@ -1,8 +1,8 @@
 import numpy as np
 import forallpeople as si
 from . import constants as c
-from .constants import meters, kelvin, pascal
-from .ideal_gas import density, speed_of_sound, Gas, get_gas_properties
+from . import units as u
+from .ideal_gas import speed_of_sound, Gas, get_gas_properties
 
 
 class Atmosphere:
@@ -14,12 +14,12 @@ class Atmosphere:
                     land point on Earth)
     """
 
-    MAX_ALTITUDE = meters(84852.0)
-    MIN_ALTITUDE = meters(-56.0)
+    MAX_ALTITUDE = u.length(84852.0)
+    MIN_ALTITUDE = u.length(-56.0)
 
     # Sea level conditions (US Standard Atmosphere 1976)
-    T0 = kelvin(288.15)
-    P0 = pascal(101325.0)
+    T0 = u.temperature(288.15)
+    P0 = u.pressure(101325.0)
 
     # Define the atmospheric layers as (base altitude, top altitude, lapse rate).
     # Altitudes are given as geopotential altitudes.
@@ -73,7 +73,7 @@ class Atmosphere:
             Density as a quantity in kg/m³.
         """
         T, P = pressure_temperature_at_altitude(altitude)
-        return density(T, P, Gas.AIR)
+        return u.density(T, P, Gas.AIR)
 
     def speed_of_sound(self, altitude):
         """
@@ -118,7 +118,7 @@ class Atmosphere:
     @staticmethod
     def standard_density():
         """Standard sea level density."""
-        return density(Atmosphere.T0, Atmosphere.P0, Gas.AIR)
+        return u.density(Atmosphere.T0, Atmosphere.P0, Gas.AIR)
 
     @staticmethod
     def standard_speed_of_sound():
@@ -131,10 +131,7 @@ def geometric_to_geopotential(h):
     Convert a geometric altitude h (given as a float in meters or as a quantity)
     to geopotential altitude. Returns a quantity in meters.
     """
-    # Ensure h is a quantity with units.
-    h = meters(h)
-    result = (c.EARTH_RADIUS * h) / (c.EARTH_RADIUS + h)
-    return result
+    return (c.EARTH_RADIUS * h) / (c.EARTH_RADIUS + u.length(h))
 
 
 def pressure_temperature_at_altitude(h):
@@ -146,7 +143,7 @@ def pressure_temperature_at_altitude(h):
     quantities with units.
     """
     # Convert h to a quantity in meters if needed.
-    h = meters(h)
+    h = u.length(h)
 
     if h < Atmosphere.MIN_ALTITUDE or h > Atmosphere.MAX_ALTITUDE:
         raise ValueError(f"Altitude out of bounds: {h}")
@@ -200,8 +197,8 @@ def us_standard_atmosphere(h):
     The outputs are provided as quantities with appropriate units.
     """
     T, P = pressure_temperature_at_altitude(h)
-    rho = density(T, P, Gas.AIR)
-    a = speed_of_sound(T, Gas.AIR)
+    rho = u.density(T, P, Gas.AIR)
+    a = u.speed_of_sound(T, Gas.AIR)
     return {
         "temperature": T,
         "pressure": P,
@@ -248,8 +245,8 @@ if __name__ == "__main__":
     air_props = get_gas_properties(Gas.AIR)
     helium_props = get_gas_properties(Gas.HELIUM)
 
-    air_density = density(T0, P0, Gas.AIR)
-    helium_density = density(T0, P0, Gas.HELIUM)
+    air_density = u.density(T0, P0, Gas.AIR)
+    helium_density = u.density(T0, P0, Gas.HELIUM)
 
     air_speed = speed_of_sound(T0, Gas.AIR)
     helium_speed = speed_of_sound(T0, Gas.HELIUM)

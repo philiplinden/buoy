@@ -10,7 +10,7 @@ from enum import Enum
 import numpy as np
 import forallpeople as si
 from . import constants as c
-from .constants import kelvin, pascal
+from . import units as u
 
 
 @dataclass
@@ -72,8 +72,8 @@ def density(T, P, gas: Gas = Gas.AIR):
     Returns:
         Density as a quantity in kg/m³
     """
-    T = kelvin(T)
-    P = pascal(P)
+    T = u.temperature(T)
+    P = u.pressure(P)
     R = gas.value.gas_constant
     return P / (R * T)
 
@@ -91,8 +91,8 @@ def volume(T, P, mass, gas: Gas = Gas.AIR):
     Returns:
         Volume as a quantity in m³
     """
-    T = kelvin(T)
-    P = pascal(P)
+    T = u.temperature(T)
+    P = u.pressure(P)
     mass = mass * si.kg if not hasattr(mass, "to") else mass.to(si.kg)
     R = gas.value.gas_constant
     
@@ -111,7 +111,7 @@ def pressure(T, density, gas: Gas = Gas.AIR):
     Returns:
         Pressure as a quantity in Pa
     """
-    T = kelvin(T)
+    T = u.temperature(T)
     density = density * si.kg/si.m**3 if not hasattr(density, "to") else density.to(si.kg/si.m**3)
     R = gas.value.gas_constant
     
@@ -130,7 +130,7 @@ def temperature(P, density, gas: Gas = Gas.AIR):
     Returns:
         Temperature as a quantity in K
     """
-    P = pascal(P)
+    P = u.pressure(P)
     density = density * si.kg/si.m**3 if not hasattr(density, "to") else density.to(si.kg/si.m**3)
     R = gas.value.gas_constant
     
@@ -148,7 +148,7 @@ def speed_of_sound(T, gas: Gas = Gas.AIR):
     Returns:
         Speed of sound as a quantity in m/s
     """
-    T = kelvin(T)
+    T = u.temperature(T)
     gamma = gas.value.gamma
     R = gas.value.gas_constant
     a_squared = gamma * R * T
