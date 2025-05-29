@@ -3,23 +3,13 @@
 // // Disable console on Windows for non-dev builds.
 // #![cfg_attr(not(feature = "dev"), windows_subsystem = "windows")]
 
-use bevy::{
-    asset::AssetMetaCheck,
-    prelude::*,
-};
 use avian3d::prelude::*;
-
-use buoy_core::prelude::{
-    BuoyPlugin,
-    BalloonPhysics,
-    units,
-    // SimulationConfig,
-    // SimulationMode,
-    // FlightProfile,
-    // RemotePlugin,
-    // RemoteConfig,
-    // RemoteSettings,
+use bevy::{
+    asset::AssetPlugin, log::LogPlugin, prelude::*, render::mesh::MeshPlugin, scene::ScenePlugin,
+    state::app::StatesPlugin,
 };
+
+use buoy_core::prelude::{BalloonPhysics, BuoyPlugin, units};
 
 fn main() -> AppExit {
     App::new().add_plugins(AppPlugin).run()
@@ -42,14 +32,21 @@ impl Plugin for AppPlugin {
 
         // Add only the plugins needed for headless operation
         app.add_plugins((
-            DefaultPlugins
-                .build()
-                .set(AssetPlugin {
-                    meta_check: AssetMetaCheck::Never,
-                    ..default()
-                }),
-            BuoyPlugin,
+            // Use minimal plugins for headless mode
+            MinimalPlugins,
+            // Asset loading without metadata checks
+            AssetPlugin::default(),
+            // Improved logging
+            LogPlugin::default(),
+            // State management for simulation phases
+            StatesPlugin::default(),
+            // Mesh handling for physics bodies
+            MeshPlugin,
+            // Required for SceneSpawner resource
+            ScenePlugin::default(),
         ));
+
+        app.add_plugins((BuoyPlugin,));
 
         // // Add the Remote plugin if in hardware-in-the-loop mode
         // match &simulation_config.simulation_mode {
@@ -74,7 +71,8 @@ impl Plugin for AppPlugin {
                 AppSystems::TickTimers,
                 AppSystems::RecordInput,
                 AppSystems::Update,
-            ).chain(),
+            )
+                .chain(),
         );
 
         // Add startup system to setup the balloon
@@ -131,13 +129,13 @@ fn setup_balloon(mut commands: Commands) {
 }
 
 /// Log the state of the balloon periodically
-fn log_balloon_state(
-    balloon_query: Query<(&BalloonPhysics, &Position)>
-) {
+fn log_balloon_state(balloon_query: Query<(&BalloonPhysics, &Position)>) {
     for (physics, position) in balloon_query.iter() {
         info!(
             "Balloon state - Position: ({:.2}, {:.2}, {:.2}) m, Volume: {:.2} m³, Buoyant force: {:.2} N, Burst: {}",
-            position.x, position.y, position.z,
+            position.x,
+            position.y,
+            position.z,
             physics.current_volume.get::<units::volume::cubic_meter>(),
             physics.buoyant_force.get::<units::force::newton>(),
             physics.burst
