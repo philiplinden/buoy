@@ -28,9 +28,8 @@ impl Plugin for CorePhysicsPlugin {
             ideal_gas::plugin,
             atmosphere::plugin,
             forces::plugin,
-            grid::plugin,
-            fluid_volume::plugin,
-            time::plugin,
+            balloon::plugin,
+            mesh_drag::plugin,
         ));
     }
 }
@@ -44,13 +43,29 @@ impl Plugin for CoreSystemsPlugin {
         app.add_plugins((
             format::plugin,
         ));
+
+        // Set up the `Pause` state.
+        app.init_state::<Pause>();
+        app.configure_sets(Update, PausableSystems.run_if(in_state(Pause(false))));
     }
 }
 
 #[derive(States, Debug, Default, Clone, Copy, Hash, PartialEq, Eq)]
 pub enum SimState {
-    Stopped,
     #[default]
+    Initializing,
     Running,
+    Stopped,
+    Paused,
+    HardwareWaiting,
     Faulted,
 }
+
+/// Whether or not the game is paused.
+#[derive(States, Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
+#[states(scoped_entities)]
+struct Pause(pub bool);
+
+/// A system set for systems that shouldn't run while the game is paused.
+#[derive(SystemSet, Copy, Clone, Eq, PartialEq, Hash, Debug)]
+struct PausableSystems;

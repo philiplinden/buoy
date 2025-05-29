@@ -1,3 +1,5 @@
+use bevy::prelude::*;
+
 /// The skin is the material that composes the outer surface of the balloon.
 /// TODO: Implement multiple material types, such as latex, polyurethane, etc.
 #[derive(Debug, Clone, Reflect)]

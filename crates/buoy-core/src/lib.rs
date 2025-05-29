@@ -1,37 +1,28 @@
 #![allow(unused_imports)]
-pub mod atmosphere;
-pub mod constants;
-pub mod core;
-pub mod forces;
-pub mod format;
-pub mod geometry;
-pub mod grid;
-pub mod ideal_gas;
-pub mod time;
-pub mod fluid_volume;
+// Support configuring Bevy lints within code.
+#![cfg_attr(bevy_lint, feature(register_tool), register_tool(bevy))]
+// Disable console on Windows for non-dev builds.
+#![cfg_attr(not(feature = "dev"), windows_subsystem = "windows")]
 
-pub use uom as units;
+pub mod constants;
+pub mod geometry;
+pub mod ideal_gas;
+pub mod atmosphere;
+pub mod forces;
+pub mod mesh_drag;
+pub mod material_properties;
+pub mod balloon;
+pub mod core;
+pub mod format;
+
 
 pub mod prelude {
     pub use crate::{
         atmosphere::Atmosphere,
         core::{BuoyPlugin, SimState},
         forces::{drag, scale_gravity},
-        grid::{Precision, RootGrid, GRID_CELL_EDGE_LENGTH_METERS},
         ideal_gas::{GasSpecies, IdealGas},
-        fluid_volume::{FluidVolume, FluidVolumeCell, FluidVolumeGrid},
+        balloon::{Balloon, BalloonPhysics},
     };
-    pub use uom::si::{
-        f32::{Mass, MassDensity, MolarMass, Pressure, ThermodynamicTemperature, Volume},
-        mass::kilogram,
-        mass_density::kilogram_per_cubic_meter,
-        molar_mass::kilogram_per_mole,
-        pressure::pascal,
-        thermodynamic_temperature::kelvin,
-        volume::cubic_meter,
-    };
+    pub use uom::si as units;
 }
-
-pub use core::BuoyPlugin;
-
-pub use fluid_volume::{FluidVolumeBuilder, FluidVolumeCell, DefaultFluidVolumeSettings};
