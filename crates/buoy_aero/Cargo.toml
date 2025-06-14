@@ -1,0 +1,13 @@
+[package]
+name = "buoy_aero"
+version = "0.1.0"
+edition = "2021"
+description = "Advanced aerodynamics modeling for buoyant bodies"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+bevy = { version = "0.13", features = ["dynamic_linking"] }
+nalgebra = "0.32"
+serde = { version = "1.0", features = ["derive"] }

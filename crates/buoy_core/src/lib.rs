@@ -7,22 +7,16 @@
 pub mod constants;
 pub mod geometry;
 pub mod ideal_gas;
-pub mod atmosphere;
 pub mod forces;
-pub mod mesh_drag;
 pub mod material_properties;
-pub mod balloon;
 pub mod core;
 pub mod format;
 
 
 pub mod prelude {
     pub use crate::{
-        atmosphere::Atmosphere,
-        core::{BuoyPlugin, SimState},
+        core::{BuoyPhysicsPlugin, BuoySystemsPlugin},
         forces::{drag, scale_gravity},
         ideal_gas::{GasSpecies, IdealGas},
-        balloon::{Balloon, BalloonPhysics},
     };
-    pub use uom::si as units;
 }

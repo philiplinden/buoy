@@ -24,7 +24,7 @@ use crate::{
     geometry::sphere_volume,
 };
 
-pub(crate) fn plugin(app: &mut App) {
+pub(crate) fn plugin(_app: &mut App) {
     // nothing yet
 }
 
@@ -94,7 +94,7 @@ impl GasSpecies {
 }
 
 /// Properties of an ideal gas per unit mass.
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Component, Default, Debug, Clone, PartialEq)]
 pub struct IdealGas {
     pub species: GasSpecies,
     pub mass: Mass,
@@ -121,10 +121,12 @@ impl IdealGas {
         ideal_gas_volume(self.temperature, self.pressure, self.mass, &self.species)
     }
 
+    
     pub fn density(&self) -> MassDensity {
         ideal_gas_density(self.temperature, self.pressure, &self.species)
     }
 
+    /// Set the mass quantity in kilograms.
     pub fn with_mass(self, mass: f32) -> Self {
         Self {
             mass: Mass::new::<kilogram>(mass),

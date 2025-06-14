@@ -1,13 +1,13 @@
 [workspace]
 resolver = "2" # Important for Bevy
 members = [
-    "crates/buoy-core",
-    "crates/buoy-server",
+    "crates/buoy_core",
+    "crates/buoy_atmo", "crates/buoy_aero", "crates/buoy_sim", "crates/buoy_common",
 ]
 
 default-members = [
-    "crates/buoy-core",
-    "crates/buoy-server",
+    "crates/buoy_core",
+    "crates/buoy_atmo",
 ]
 
 # Default binary to run when using `cargo run` from workspace root
@@ -28,7 +28,7 @@ license-file = "LICENSE-APACHE"
 
 [workspace.dependencies]
 # Shared dependencies with fixed versions
-bevy = { version = "0.16.0", default-features = false, features = [
+bevy = { version = "0.16.1", default-features = false, features = [
     "bevy_state",
     "bevy_render", # needed for working with meshes, even without rendering to the screen
     "bevy_asset", # needed for working with assets, including configs
@@ -38,10 +38,14 @@ bevy = { version = "0.16.0", default-features = false, features = [
 ] }
 
 # Physics engine.
-avian3d = "0.3.0"
+avian3d = "0.3.1"
 # Physical units library for unit conversions and calculations.
 uom = "0.37.0"
 bevy_remote = "0.16.0"
+# Error handling
+thiserror = "1.0"
+# Property-based testing
+proptest = "1.4"
 # Compile low-severity logs out of native builds for performance.
 log = { version = "0.4", features = [
     "max_level_debug",

@@ -7,23 +7,9 @@ use uom::si::{
 };
 
 use crate::{
-    atmosphere::Atmosphere,
     constants::{EARTH_RADIUS_M, STANDARD_GRAVITY},
-    core::SimState,
+    core::PausableSystems,
 };
-
-pub(crate) fn plugin(app: &mut App) {
-    app.insert_resource(Gravity(
-        Vec3::NEG_Y * STANDARD_GRAVITY.get::<meter_per_second_squared>(),
-    ));
-    app.add_systems(
-        FixedUpdate,
-        (update_gravity)
-            .chain()
-            .in_set(PhysicsStepSet::First)
-            .run_if(in_state(SimState::Running)),
-    );
-}
 
 /// Fraction of standard gravity at an altitude (m) above mean sea level.
 pub fn scale_gravity(altitude_meters: Scalar) -> Scalar {
@@ -56,10 +42,4 @@ pub fn buoyancy(
         * (displaced_volume.get::<cubic_meter>()
             * ambient_density.get::<kilogram_per_cubic_meter>()
             * gravity_acceleration.get::<meter_per_second_squared>())
-}
-
-fn update_gravity(mut query: Query<(&mut GravityScale, &Position)>) {
-    for (mut gravity_scale, position) in query.iter_mut() {
-        gravity_scale.0 = scale_gravity(position.y);
-    }
 }

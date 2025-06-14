@@ -1,25 +1,24 @@
 [package]
-name = "buoy-core"
+name = "buoy_atmo"
 version = "0.1.0"
-description = "Core logic for buoyancy simulation"
+description = "Atmosphere models"
 edition = { workspace = true }
 authors = { workspace = true }
 license = { workspace = true }
 
 [dependencies]
+buoy_core = {path = "../buoy_core"}
 bevy = { workspace = true }
-avian3d = { workspace = true }
 uom = { workspace = true }
 log = { workspace = true }
 tracing = { workspace = true }
+thiserror.workspace = true
 
 [features]
 default = [
-    "dev",
+    "us_std_1976",
 ]
-dev = [
-    "bevy/bevy_debug_stepping",
-]
+us_std_1976 = []
 
 [lints.rust]
 # Mark `bevy_lint` as a valid `cfg`, as it is set when the Bevy linter runs.

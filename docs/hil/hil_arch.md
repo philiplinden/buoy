@@ -1,11 +1,34 @@
 # Hardware-in-the-Loop Balloon Simulation Design Document
 
 ## Overview
-A real-time physics simulation server for high-altitude balloon testing using Bevy game engine with Bevy Remote Protocol (BRP) for hardware integration.
+A (faster than) real-time physics simulation server for high-altitude balloon
+testing using Bevy game engine with Bevy Remote Protocol (BRP) for hardware
+integration.
 
 ## Architecture
 
-### System Components
+All physics calculations and simulated behaviors are defined in
+[`buoy-core`](../crates/buoy_core). 
+
+The [`buoy-server`](../crates/buoy_server/) application spools up an environment
+that simulates all bodies instanced within it with
+[`buoy-core`](../crates/buoy_core/). The purpose of the server crate is to
+bridge virtual and hardware-in-the-loop devices to a shared simulated
+environment. The server handles communication to and from the simulation and
+devices or clients.
+
+Instances of [`buoy-client`](../crates/buoy_client/) connect to the server and
+allow humans to interact with the simulated objects and environment. The client
+handles rendering and visualizing simulation data.
+
+The reason for choosing server-client architecture is primarily driven by the
+future vision of running hardware-in-the-loop tests and simulated flights that
+send mock data to sensors and actuators to "fool" them into believing it is a
+real flight. Before incorporating hardware, there is also an opportunity to run
+real flight software on fully virtual devices within the simulation, as long as
+the flight software applications are capable of interfacing across the server
+interface.
+
 ```
 ┌─────────────────┐    JSON-RPC/HTTP   ┌──────────────────┐
 │ Flight Computer │◄──────────────────►│ Bevy HIL Server  │
@@ -19,6 +42,14 @@ A real-time physics simulation server for high-altitude balloon testing using Be
                                        │ Client (Optional)│
                                        └──────────────────┘
 ```
+
+This does increase complexity quite a bit, so early builds of the server will
+have client tools integrated into a single app until the physics simulations are
+stable. See [sim_arch.md](./sim_arc.md) for detailed discussion of the
+physics simulation architecture.
+
+Below is a concept design for the full app architecture for standalone and
+hardware-in-the-loop modes of the server-client system.
 
 ### Simulation Modes
 

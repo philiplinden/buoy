@@ -31,11 +31,11 @@ pub static GAS_CONSTANT: LazyLock<MolarHeatCapacity> =
 pub static STANDARD_GRAVITY: LazyLock<Acceleration> =
     LazyLock::new(|| Acceleration::new::<standard_gravity>(1.0));
 
-/// The standard temperature on Earth in K.
+/// The temperature part of Standard Temperature and Pressure (STP).
 pub static STANDARD_TEMPERATURE: LazyLock<ThermodynamicTemperature> =
     LazyLock::new(|| ThermodynamicTemperature::new::<kelvin>(273.15));
 
-/// The standard pressure on Earth in Pa.
+/// The pressure part of Standard Temperature and Pressure (STP).
 pub static STANDARD_PRESSURE: LazyLock<Pressure> =
     LazyLock::new(|| Pressure::new::<pascal>(101325.0));
 
