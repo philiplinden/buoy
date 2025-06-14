@@ -1,21 +1,21 @@
-mod logging;
+// Disable console on Windows for non-dev builds.
+#![cfg_attr(not(feature = "dev"), windows_subsystem = "windows")]
 
-use tracing::info;
+use bevy::prelude::*;
+use buoy_sim::prelude::*;
 
-fn main() {
+fn main() -> AppExit {
     // Configure logging based on the environment
     if cfg!(debug_assertions) {
-        if let Err(e) = logging::configure_dev_logging() {
+        if let Err(e) = buoy_sim::logging::configure_dev_logging() {
             eprintln!("Failed to configure development logging: {}", e);
-            return;
         }
-    } else if let Err(e) = logging::configure_logging() {
+    } else if let Err(e) = buoy_sim::logging::configure_logging() {
         eprintln!("Failed to configure logging: {}", e);
-        return;
     }
 
-    info!("Starting Buoy simulation");
-    
-    // TODO: Initialize Bevy app and run simulation
-    info!("Simulation complete");
+    App::new().add_plugins((
+        DefaultPlugins,
+        BuoyCommonPlugins,
+    )).run()
 }

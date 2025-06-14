@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2" # Important for Bevy
 members = [
-    # Common functionalityp
+    # Common functionality
     "crates/buoy_common",
     
     # Physics and simulation
@@ -56,12 +56,12 @@ thiserror = "2.0.12"
 proptest = "1.7.0"
 # Compile low-severity logs out of native builds for performance.
 log = { version = "0.4.27", features = [
-    "max_level_debug",
+    "max_level_info",
     "release_max_level_warn",
 ] }
 # Compile low-severity logs out of web builds for performance.
 tracing = { version = "0.1.41", features = [
-    "max_level_debug",
+    "max_level_info",
     "release_max_level_warn",
 ] }
 nalgebra = "0.33.2"

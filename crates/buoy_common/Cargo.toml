@@ -8,4 +8,7 @@ description = "Common utilities for buoy simulation"
 path = "src/lib.rs"
 
 [dependencies]
+bevy = { workspace = true }
 serde = { workspace = true }
+uom = { workspace = true }
+tracing = { workspace = true }

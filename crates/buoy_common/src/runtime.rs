@@ -1,19 +1,11 @@
 use bevy::prelude::*;
 
-pub struct RuntimeControllerPlugin;
+pub struct PausableSystemsPlugin;
 
-impl Plugin for RuntimeControllerPlugin {
+impl Plugin for PausableSystemsPlugin {
     fn build(&self, app: &mut App) {
         app.init_state::<RuntimeState>();
-
         app.configure_sets(Update, PausableSystems.run_if(in_state(RuntimeState::Running)));
-        app.add_systems(
-            FixedUpdate,
-            (update_gravity)
-                .chain()
-                .in_set(PhysicsStepSet::First)
-                .in_set(PausableSystems),
-        );
     }
 }
 
