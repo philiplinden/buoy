@@ -81,9 +81,9 @@ changelog_path = "CHANGELOG.md"
 git_path = "."
 # path to the workspace members
 members = [
-    "crates/buoy_core",
-    "crates/buoy_atmo",
-    "crates/buoy_aero",
-    "crates/buoy_sim",
     "crates/buoy_common",
+    "crates/buoy_physics",
+    "crates/buoy_aero",
+    "crates/buoy_atmo",
+    "crates/buoy_sim",
 ] 

@@ -1,15 +1,12 @@
 //! Forces applied to rigid bodies.
-use avian3d::{math::Scalar, prelude::*};
+use avian3d::math::Scalar;
 use bevy::prelude::*;
 use uom::si::{
     acceleration::meter_per_second_squared, area::square_meter, f32::*, length::meter,
     mass_density::kilogram_per_cubic_meter, ratio::ratio, volume::cubic_meter,
 };
 
-use crate::{
-    constants::{EARTH_RADIUS_M, STANDARD_GRAVITY},
-    core::PausableSystems,
-};
+use crate::constants::EARTH_RADIUS_M;
 
 /// Fraction of standard gravity at an altitude (m) above mean sea level.
 pub fn scale_gravity(altitude_meters: Scalar) -> Scalar {

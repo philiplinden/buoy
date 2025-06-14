@@ -12,13 +12,7 @@ Rust.
 The simulation engine is built from modular components that can be used independently
 or together to create a complete simulation environment.
 
-### Core Physics Components
-
-#### `buoy_atmo`
-- U.S. Standard Atmosphere 1976 implementation
-- Temperature, pressure, and density calculations
-- Configurable sea-level conditions
-- No wind or humidity modeling
+### Core Components
 
 #### `buoy_physics`
 - Fundamental physics calculations
@@ -26,6 +20,16 @@ or together to create a complete simulation environment.
 - Gas expansion (Charles's Law)
 - Basic drag models
 - Mass and inertia calculations
+- Material properties
+- Core data structures and types
+
+#### `buoy_atmo`
+- U.S. Standard Atmosphere 1976 implementation
+- Temperature, pressure, and density calculations
+- Configurable sea-level conditions
+- No wind or humidity modeling
+- Altitude-based calculations
+- Atmospheric data structures
 
 #### `buoy_aero`
 - Advanced aerodynamics modeling
@@ -33,41 +37,17 @@ or together to create a complete simulation environment.
 - Surface normal computations
 - Wind effects on bodies
 - Turbulence modeling
+- Aerodynamic data structures
 
-### Simulation Engine
+### Application
 
 #### `buoy_sim`
-- Core simulation orchestration
-- Entity management
-- Physics system coordination
-- Time management
-- Configuration handling
-- Event system
-
-### Client/Server Infrastructure
-
-#### `buoy_server`
-- Physics simulation hosting
-- Hardware interface management
-- Network protocol handling
-- Real-time constraints enforcement
-- State synchronization
-
-#### `buoy_client`
-- 3D visualization
-- UI components
-- Telemetry display
-- Interactive controls
-- Data logging
-
-### Hardware Integration
-
-#### `buoy_hil`
-- Hardware-in-loop interface
-- BRP protocol implementation
-- Hardware device management
-- Real-time constraints
-- Device synchronization
+- Main simulation application
+- Bevy app configuration
+- System scheduling
+- Logging and instrumentation
+- Configuration loading
+- Example implementations
 
 ### Common Utilities
 
@@ -77,6 +57,8 @@ or together to create a complete simulation environment.
 - Math utilities
 - Common traits
 - Error handling
+- Formatting utilities
+- Configuration management
 
 ## Dependencies
 
@@ -87,12 +69,13 @@ External dependencies should be carefully selected to avoid unnecessary bloat.
 - `bevy`: Game engine and ECS framework
 - `serde`: Serialization
 - `nalgebra`: Math operations
-- `tokio`: Async runtime (for server/client)
+- `tracing`: Logging and instrumentation
+- `uom`: Units of measurement
 
 ### Optional Dependencies
 - `bevy_egui`: Debug UI
-- `bevy_remote`: BRP protocol
-- `plotters`: Data visualization
+- `bevy_remote`: Remote debugging
+- `proptest`: Property-based testing
 
 ## Development Phases
 
@@ -108,17 +91,17 @@ External dependencies should be carefully selected to avoid unnecessary bloat.
 - Time management
 - Configuration system
 
-### Phase 3: Client/Server
-- Basic visualization
-- Network protocol
-- State synchronization
+### Phase 3: Visualization
+- Basic 3D visualization
+- Debug UI
+- Telemetry display
 - Interactive controls
 
-### Phase 4: Hardware Integration
-- BRP protocol
-- Device management
-- Real-time constraints
-- Validation testing
+### Phase 4: Advanced Features
+- Advanced aerodynamics
+- Multi-body interactions
+- Weather data integration
+- Performance optimization
 
 ## Testing Strategy
 
@@ -127,6 +110,7 @@ Each crate should include:
 - Integration tests for component interaction
 - Validation against known data
 - Performance benchmarks
+- Property-based tests for physics calculations
 
 ## Performance Considerations
 
@@ -168,6 +152,7 @@ The following steps are handled automatically by GitHub Actions:
 - Creation of GitHub Release with changelog
 - PR creation with changelog updates
 - Build and packaging of release artifacts
+- Documentation generation and deployment
 
 ### 4. Review and Publish
 - Review and merge the changelog PR
@@ -175,6 +160,7 @@ The following steps are handled automatically by GitHub Actions:
   - Changelog in description
   - CHANGELOG.md as artifact
   - Build artifacts from release workflow
+  - Generated documentation
 
 ### Commit Convention
 All commits should follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:

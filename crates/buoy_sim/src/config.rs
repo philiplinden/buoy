@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use thiserror::Error;
+use tracing::{debug, error, instrument, warn};
 
 #[derive(Error, Debug)]
 pub enum ConfigError {
@@ -50,29 +51,51 @@ pub struct MaterialConfig {
 }
 
 impl SimulationConfig {
+    #[instrument(skip_all, fields(path = %path.as_ref().display()))]
     pub fn load(path: impl AsRef<std::path::Path>) -> Result<Self, ConfigError> {
-        let contents = std::fs::read_to_string(path.as_ref()).map_err(|e| ConfigError::LoadError {
-            path: path.as_ref().to_path_buf(),
-            source: e,
+        debug!("Loading simulation config");
+        
+        let contents = std::fs::read_to_string(path.as_ref()).map_err(|e| {
+            error!(
+                error = ?e,
+                path = %path.as_ref().display(),
+                "Failed to read config file"
+            );
+            ConfigError::LoadError {
+                path: path.as_ref().to_path_buf(),
+                source: e,
+            }
         })?;
 
         let config: SimulationConfig = serde_json::from_str(&contents)
-            .map_err(|e| ConfigError::ValidationError {
-                reason: e.to_string(),
+            .map_err(|e| {
+                error!(
+                    error = ?e,
+                    path = %path.as_ref().display(),
+                    "Failed to parse config file"
+                );
+                ConfigError::ValidationError {
+                    reason: e.to_string(),
+                }
             })?;
 
+        debug!("Config loaded successfully, validating...");
         config.validate()?;
+        debug!("Config validation successful");
         Ok(config)
     }
 
+    #[instrument(skip(self))]
     fn validate(&self) -> Result<(), ConfigError> {
         if self.physics.timestep <= 0.0 {
+            warn!(timestep = self.physics.timestep, "Invalid physics timestep");
             return Err(ConfigError::ValidationError {
                 reason: "Physics timestep must be positive".to_string(),
             });
         }
 
         if self.physics.gravity <= 0.0 {
+            warn!(gravity = self.physics.gravity, "Invalid gravity value");
             return Err(ConfigError::ValidationError {
                 reason: "Gravity must be positive".to_string(),
             });
@@ -81,22 +104,38 @@ impl SimulationConfig {
         // Validate material properties
         for material in &self.materials {
             if material.max_temperature <= 0.0 {
+                warn!(
+                    material = %material.name,
+                    max_temperature = material.max_temperature,
+                    "Invalid material max temperature"
+                );
                 return Err(ConfigError::ValidationError {
                     reason: format!("Material {}: max_temperature must be positive", material.name),
                 });
             }
             if material.density <= 0.0 {
+                warn!(
+                    material = %material.name,
+                    density = material.density,
+                    "Invalid material density"
+                );
                 return Err(ConfigError::ValidationError {
                     reason: format!("Material {}: density must be positive", material.name),
                 });
             }
             if !(0.0..=1.0).contains(&material.emissivity) {
+                warn!(
+                    material = %material.name,
+                    emissivity = material.emissivity,
+                    "Invalid material emissivity"
+                );
                 return Err(ConfigError::ValidationError {
                     reason: format!("Material {}: emissivity must be between 0 and 1", material.name),
                 });
             }
         }
 
+        debug!("All material properties validated successfully");
         Ok(())
     }
 } 

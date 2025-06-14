@@ -1,8 +1,7 @@
 [workspace]
 resolver = "2" # Important for Bevy
 members = [
-    # Core functionality
-    "crates/buoy_core",
+    # Common functionalityp
     "crates/buoy_common",
     
     # Physics and simulation
@@ -32,10 +31,10 @@ license-file = "LICENSE-APACHE"
 [workspace.dependencies]
 # Shared dependencies with fixed versions
 bevy = { version = "0.16.1", default-features = false, features = [
-    "bevy_state",
+    "bevy_state",      # needed for working with Bevy states
     "bevy_render",     # needed for working with meshes, even without rendering to the screen
     "bevy_asset",      # needed for working with assets, including configs
-    "multi_threaded",
+    "multi_threaded",  # performance enhancement, normally a default feature
     "dynamic_linking", # Improve compile times for dev builds by linking Bevy as a dynamic library.
     "track_location",  # Improve error messages coming from Bevy
 ] }

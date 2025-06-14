@@ -9,6 +9,7 @@ Thank you for your interest in contributing to Buoy! This document outlines the 
 - Place example files at the top level of each crate
 - Use `src/tests/` directory for integration tests
 - Keep unit tests in the same file as the code they test
+- Inherit author and license fields from workspace Cargo.toml
 
 ### Documentation
 - Use rustdoc for all documentation
@@ -16,6 +17,7 @@ Thank you for your interest in contributing to Buoy! This document outlines the 
 - Document all public APIs
 - Include examples in doc comments where appropriate
 - Keep README.md up to date with crate overview and usage
+- Documentation is automatically generated and deployed to GitHub Pages
 
 ### Code Style
 - Follow Rust's standard formatting (use `cargo fmt`)
@@ -24,24 +26,33 @@ Thank you for your interest in contributing to Buoy! This document outlines the 
 - Keep functions focused and small
 - Use type aliases for complex types
 - Prefer explicit over implicit
+- Follow Bevy's coding style for Bevy-related code
 
 ### Testing
 - Write unit tests for all new functionality
 - Include property-based tests for physics calculations
 - Maintain test coverage for critical paths
 - Use `#[cfg(test)]` for test-only code
+- Add tests for edge cases and error conditions
+- Use proptest for physics calculations
 
 ### Error Handling
-- Use `thiserror` for error types
-- Provide meaningful error messages
+- Use `tracing` for logging and error reporting
+- Return `Result` types with descriptive error messages
+- Use custom error types where appropriate
+- Log errors with appropriate severity levels
+- Include context in error messages
+- Handle errors at appropriate levels
 - Use `?` operator for error propagation
-- Document error conditions
+- Document error conditions in public APIs
 
 ### Performance
 - Profile code before optimizing
 - Use appropriate data structures
 - Consider memory layout for hot paths
 - Document performance characteristics
+- Use Bevy's performance best practices
+- Minimize allocations in hot paths
 
 ## Pull Request Process
 
@@ -51,16 +62,17 @@ Thank you for your interest in contributing to Buoy! This document outlines the 
 4. Update documentation
 5. Run `cargo test` and `cargo clippy`
 6. Submit PR with clear description of changes
+7. Ensure CI passes before requesting review
 
 ## Crate Responsibilities
 
-- `buoy_core`: Core data structures and utilities
-- `buoy_physics`: Physics calculations and simulations
-- `buoy_atmo`: Atmospheric modeling
-- `buoy_aero`: Aerodynamic calculations
-- `buoy_sim`: Simulation orchestration
-- `buoy_common`: Shared utilities and types
+### Core Components
+- `buoy_physics`: Physics calculations, simulations, and core data structures
+- `buoy_atmo`: Atmospheric modeling, calculations, and data structures
+- `buoy_aero`: Aerodynamic calculations, models, and data structures
 
-## Questions?
+### Application
+- `buoy_sim`: Main simulation application and Bevy integration
 
-Feel free to open an issue for any questions about contributing! 
+### Utilities
+- `buoy_common`: Shared utilities, types, formatting, and configuration management

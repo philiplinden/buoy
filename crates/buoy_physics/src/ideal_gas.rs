@@ -1,28 +1,17 @@
 //! Ideal gas equations.
 #![allow(dead_code)]
 
-use std::ops::{Div, Mul};
-
-use avian3d::math::Scalar;
 use bevy::prelude::*;
 use uom::si::{
     f32::{
         ThermodynamicTemperature, Pressure, Mass, Volume, 
         MassDensity, MolarMass
     },
-    thermodynamic_temperature::kelvin,
-    pressure::pascal,
     mass::kilogram,
-    volume::cubic_meter,
-    mass_density::kilogram_per_cubic_meter,
     molar_mass::kilogram_per_mole,
 };
 
-use crate::{
-    constants::{GAS_CONSTANT, STANDARD_GRAVITY},
-    core::SimState,
-    geometry::sphere_volume,
-};
+use crate::constants::GAS_CONSTANT;
 
 pub(crate) fn plugin(_app: &mut App) {
     // nothing yet

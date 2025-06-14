@@ -10,7 +10,8 @@ path = "src/lib.rs"
 [dependencies]
 bevy = { workspace = true }
 serde = { workspace = true }
-buoy_core = {path = "../buoy_core"}
+buoy_common = { path = "../buoy_common" }
+buoy_physics = { path = "../buoy_physics" }
 uom = { workspace = true }
 log = { workspace = true }
 tracing = { workspace = true }

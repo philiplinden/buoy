@@ -7,11 +7,12 @@
 
 use bevy::prelude::Resource;
 use thiserror::Error;
+use tracing::{debug, error, instrument, warn};
 use uom::si::{
-    f32::*, length::meter, pressure::kilopascal, thermodynamic_temperature::degree_celsius,
+    f32::*, length::meter, mass_density::kilogram_per_cubic_meter, pressure::kilopascal, thermodynamic_temperature::degree_celsius,
 };
 
-use buoy_core::{
+use buoy_physics::{
     constants::{STANDARD_PRESSURE, STANDARD_TEMPERATURE},
     ideal_gas::{GasSpecies, ideal_gas_density},
 };
@@ -73,14 +74,23 @@ impl StandardAtmosphere1976 {
     /// This function wraps a direct implementation of the model
     /// ([`StandardAtmosphere::temperature_f32`]) with flexible unit quantities
     /// for the inputs and outputs.
+    #[instrument(skip(self), fields(altitude = %altitude.get::<meter>()))]
     pub fn temperature(
         &self,
         altitude: Length,
     ) -> Result<ThermodynamicTemperature, StandardAtmosphereError> {
         let meters_above_sealevel = altitude.get::<meter>();
+        debug!("Calculating temperature at altitude {}m", meters_above_sealevel);
+        
         match self.temperature_f32(meters_above_sealevel) {
-            Ok(temperature) => Ok(ThermodynamicTemperature::new::<degree_celsius>(temperature)),
-            Err(e) => Err(e),
+            Ok(temperature) => {
+                debug!("Temperature calculated successfully: {}°C", temperature);
+                Ok(ThermodynamicTemperature::new::<degree_celsius>(temperature))
+            },
+            Err(e) => {
+                error!(error = ?e, "Failed to calculate temperature");
+                Err(e)
+            }
         }
     }
 
@@ -88,11 +98,18 @@ impl StandardAtmosphere1976 {
     /// where altitude is expressed as a number in meters.
     ///
     /// See Equation x, Page y.
+    #[instrument(skip(self), fields(altitude = meters_above_sealevel))]
     pub fn temperature_f32(
         &self,
         meters_above_sealevel: f32,
     ) -> Result<f32, StandardAtmosphereError> {
         if !self.is_valid_altitude(meters_above_sealevel) {
+            warn!(
+                altitude = meters_above_sealevel,
+                min = Self::MIN_ALTITUDE,
+                max = Self::MAX_ALTITUDE,
+                "Altitude out of bounds"
+            );
             return Err(StandardAtmosphereError::AltitudeOutOfBounds {
                 altitude: meters_above_sealevel,
                 min: Self::MIN_ALTITUDE,
@@ -114,6 +131,11 @@ impl StandardAtmosphere1976 {
         };
 
         if temperature.is_nan() || temperature.is_infinite() {
+            error!(
+                altitude = meters_above_sealevel,
+                temperature = temperature,
+                "Invalid temperature calculation"
+            );
             return Err(StandardAtmosphereError::TemperatureError {
                 altitude: meters_above_sealevel,
                 reason: "Calculation resulted in invalid temperature".to_string(),
@@ -129,11 +151,20 @@ impl StandardAtmosphere1976 {
     /// This function wraps a direct implementation of the model
     /// ([`StandardAtmosphere::pressure_f32`]) with flexible unit quantities
     /// for the inputs and outputs.
+    #[instrument(skip(self), fields(altitude = %altitude.get::<meter>()))]
     pub fn pressure(&self, altitude: Length) -> Result<Pressure, StandardAtmosphereError> {
         let meters_above_sealevel = altitude.get::<meter>();
+        debug!("Calculating pressure at altitude {}m", meters_above_sealevel);
+        
         match self.pressure_f32(meters_above_sealevel) {
-            Ok(pressure) => Ok(Pressure::new::<kilopascal>(pressure)),
-            Err(e) => Err(e),
+            Ok(pressure) => {
+                debug!("Pressure calculated successfully: {}kPa", pressure);
+                Ok(Pressure::new::<kilopascal>(pressure))
+            },
+            Err(e) => {
+                error!(error = ?e, "Failed to calculate pressure");
+                Err(e)
+            }
         }
     }
 
@@ -141,6 +172,7 @@ impl StandardAtmosphere1976 {
     /// where altitude is expressed as a number in meters.
     ///
     /// See Equation x, Page y.
+    #[instrument(skip(self), fields(altitude = meters_above_sealevel))]
     pub fn pressure_f32(&self, meters_above_sealevel: f32) -> Result<f32, StandardAtmosphereError> {
         let temperature = self.temperature_f32(meters_above_sealevel)?;
         
@@ -158,6 +190,11 @@ impl StandardAtmosphere1976 {
         };
 
         if pressure.is_nan() || pressure.is_infinite() || pressure <= 0.0 {
+            error!(
+                altitude = meters_above_sealevel,
+                pressure = pressure,
+                "Invalid pressure calculation"
+            );
             return Err(StandardAtmosphereError::PressureError {
                 altitude: meters_above_sealevel,
                 reason: "Calculation resulted in invalid pressure".to_string(),
@@ -168,12 +205,23 @@ impl StandardAtmosphere1976 {
     }
 
     /// Density (kg/m³) of the atmosphere at an altitude above sea-level.
+    #[instrument(skip(self), fields(altitude = %altitude.get::<meter>()))]
     pub fn density(&self, altitude: Length) -> Result<MassDensity, StandardAtmosphereError> {
+        debug!("Calculating density at altitude {}m", altitude.get::<meter>());
+        
         if let (Ok(temperature), Ok(pressure)) =
             (self.temperature(altitude), self.pressure(altitude))
         {
-            Ok(ideal_gas_density(temperature, pressure, &GasSpecies::air()))
+            let density = ideal_gas_density(temperature, pressure, &GasSpecies::air());
+            debug!("Density calculated successfully: {}kg/m³", density.get::<kilogram_per_cubic_meter>());
+            Ok(density)
         } else {
+            warn!(
+                altitude = altitude.get::<meter>(),
+                min = Self::MIN_ALTITUDE,
+                max = Self::MAX_ALTITUDE,
+                "Altitude out of bounds for density calculation"
+            );
             Err(StandardAtmosphereError::AltitudeOutOfBounds {
                 altitude: altitude.get::<meter>(),
                 min: Self::MIN_ALTITUDE,
@@ -183,11 +231,15 @@ impl StandardAtmosphere1976 {
     }
 
     /// Atmospheric density at Standard Temperature and Pressure (STP)
+    #[instrument(skip_all)]
     pub fn density_at_stp() -> MassDensity {
-        ideal_gas_density(
+        debug!("Calculating density at STP");
+        let density = ideal_gas_density(
             STANDARD_TEMPERATURE.clone(),
             STANDARD_PRESSURE.clone(),
             &GasSpecies::air(),
-        )
+        );
+        debug!("STP density calculated: {}kg/m³", density.get::<kilogram_per_cubic_meter>());
+        density
     }
 }
