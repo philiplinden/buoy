@@ -4,14 +4,30 @@
 // Disable console on Windows for non-dev builds.
 #![cfg_attr(not(feature = "dev"), windows_subsystem = "windows")]
 
-pub mod constants;
+//! Core data structures and utilities for the Buoy project.
+//! 
+//! This crate provides fundamental data structures and utilities used across the project:
+//! - Configuration management
+//! - Geometry primitives
+//! - Mesh operations
+//! - Data formatting utilities
+
+pub mod config;
+pub mod core;
+pub mod format;
 pub mod geometry;
+pub mod mesh_drag;
+
+pub use config::*;
+pub use core::*;
+pub use format::*;
+pub use geometry::*;
+pub use mesh_drag::*;
+
+pub mod constants;
 pub mod ideal_gas;
 pub mod forces;
 pub mod material_properties;
-pub mod core;
-pub mod format;
-
 
 pub mod prelude {
     pub use crate::{

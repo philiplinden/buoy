@@ -1,19 +1,22 @@
 [workspace]
 resolver = "2" # Important for Bevy
 members = [
+    # Core functionality
     "crates/buoy_core",
+    "crates/buoy_common",
+    
+    # Physics and simulation
+    "crates/buoy_physics",
     "crates/buoy_atmo",
     "crates/buoy_aero",
     "crates/buoy_sim",
-    "crates/buoy_common",
+    
+    # Application
+    "crates/buoy_app",
 ]
 
 default-members = [
-    "crates/buoy_core",
-    "crates/buoy_atmo",
-    "crates/buoy_aero",
     "crates/buoy_sim",
-    "crates/buoy_common",
 ]
 
 # Default binary to run when using `cargo run` from workspace root

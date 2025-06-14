@@ -1,50 +1,54 @@
 # Buoy Physics
 
-Core physics calculations for buoyant bodies in a fluid medium. This crate provides
-the fundamental physics models needed for simulating buoyant objects like balloons
-and submersibles.
+This crate provides physics simulation components for the Buoy project, handling all physics-related calculations and simulations.
 
 ## Features
 
-- Buoyancy force calculations using Archimedes' principle
-- Gas expansion modeling (Charles's Law)
-- Basic drag force calculations
-- Mass and inertia computations
-- Unit conversion utilities
+- Force calculations and dynamics
+- Material properties and constants
+- Ideal gas law implementations
+- Physical constants and unit conversions
 
 ## Usage
 
 ```rust
-use buoy_physics::{Buoyancy, GasExpansion, Drag};
+use buoy_physics::{forces, ideal_gas, material_properties};
 
-// Calculate buoyant force
-let buoyancy = Buoyancy::new(volume, fluid_density);
-let force = buoyancy.calculate_force();
+// Calculate forces
+let force = forces::calculate_force(mass, acceleration);
 
-// Model gas expansion
-let gas = GasExpansion::new(initial_volume, initial_temp);
-let new_volume = gas.expand(new_temp);
+// Use ideal gas law
+let pressure = ideal_gas::calculate_pressure(volume, temperature, moles);
 
-// Calculate drag force
-let drag = Drag::new(velocity, area, drag_coefficient);
-let force = drag.calculate_force();
+// Get material properties
+let density = material_properties::get_density(material);
 ```
 
-## Dependencies
+## Examples
 
-- `bevy`: Game engine and ECS framework
-- `nalgebra`: Vector and matrix operations
-- `serde`: Serialization support
+See the `examples` directory for complete usage examples.
 
 ## Testing
 
-The crate includes comprehensive unit tests for all physics calculations,
-validated against known solutions and experimental data.
+This crate uses both unit tests and property-based tests to ensure correctness:
+
+```bash
+# Run all tests
+cargo test
+
+# Run property-based tests
+cargo test --features proptest
+```
 
 ## Contributing
 
-When adding new physics models:
-1. Include mathematical derivation in documentation
-2. Add unit tests with known solutions
-3. Benchmark performance impact
-4. Update this README with new features 
+Please see the main [CONTRIBUTING.md](../../CONTRIBUTING.md) for guidelines.
+
+## License
+
+Licensed under either of
+
+ * Apache License, Version 2.0 ([LICENSE-APACHE](../../LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+ * MIT license ([LICENSE-MIT](../../LICENSE-MIT) or http://opensource.org/licenses/MIT)
+
+at your option. 

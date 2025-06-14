@@ -2,12 +2,21 @@
 name = "buoy_physics"
 version = "0.1.0"
 edition = "2024"
-description = "Core physics calculations for buoyant bodies"
+description = "Physics simulation components for the Buoy project"
+readme = "README.md"
 
 [lib]
 path = "src/lib.rs"
 
 [dependencies]
-bevy = { workspace = true }
+uom = { workspace = true }
+thiserror = { workspace = true }
 nalgebra = { workspace = true }
 serde = { workspace = true }
+
+[dev-dependencies]
+proptest = { workspace = true }
+
+[[example]]
+name = "basic_physics"
+path = "examples/basic_physics.rs"
