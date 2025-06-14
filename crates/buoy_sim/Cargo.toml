@@ -7,6 +7,10 @@ description = "Main simulation application for the Buoy project"
 [lib]
 path = "src/lib.rs"
 
+[[bin]]
+name = "buoy"
+path = "src/main.rs"
+
 [dependencies]
 bevy = { workspace = true }
 tracing = { workspace = true }

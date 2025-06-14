@@ -17,8 +17,14 @@ default-members = [
     "crates/buoy_sim",
 ]
 
-[workspace.metadata.bin]
-default = "buoy_sim"
+[workspace.metadata.bevy_cli]
+default_run = "buoy"
+# Enable debug stepping for physics simulation debugging
+debug_stepping = true
+# Enable hot reloading for faster development
+hot_reload = true
+# Enable asset watching for configuration files
+watch_assets = true
 
 [workspace.package]
 version = "0.1.0"
@@ -76,21 +82,32 @@ serde_json = "1.0.107"
 #getrandom = { git = "https://github.com/benfrankel/getrandom" }
 
 [workspace.metadata.bevy_cli.release]
-# Disable dev features for release builds.
+# Disable dev features for release builds
 default-features = false
+# Enable optimizations for physics calculations
+opt-level = 3
 
 [workspace.metadata.bevy_cli.web]
-# Disable native features for web builds.
+# Disable native features for web builds
 default-features = false
+# Enable web-specific optimizations
+opt-level = "s"
 
 [workspace.metadata.bevy_cli.web.dev]
 features = ["dev"]
+# Enable web debugging tools
+debug = true
 
-# You can configure the warning levels of Bevy lints here. For a list of all lints, see:
-# <https://thebevyflock.github.io/bevy_cli/bevy_lint/lints/>
+# Configure Bevy lints for physics simulation
 [workspace.metadata.bevy_lint]
-# panicking_methods = "deny"
-# pedantic = "warn"
+# Deny panics in physics calculations
+panicking_methods = "deny"
+# Enable pedantic warnings for numerical accuracy
+pedantic = "warn"
+# Warn about potential floating point precision issues
+float_cmp = "warn"
+# Warn about potential performance issues in hot paths
+performance = "warn"
 
 # Compile with Performance Optimizations:
 # https://bevyengine.org/learn/quick-start/getting-started/setup/#compile-with-performance-optimizations
