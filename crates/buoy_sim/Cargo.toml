@@ -15,8 +15,6 @@ path = "src/main.rs"
 bevy = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json", "time"] }
-atty = "0.2"
-thiserror = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 buoy_physics = { path = "../buoy_physics" }
