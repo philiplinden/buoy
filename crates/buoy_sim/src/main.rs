@@ -9,11 +9,9 @@ fn main() {
             eprintln!("Failed to configure development logging: {}", e);
             return;
         }
-    } else {
-        if let Err(e) = logging::configure_logging() {
-            eprintln!("Failed to configure logging: {}", e);
-            return;
-        }
+    } else if let Err(e) = logging::configure_logging() {
+        eprintln!("Failed to configure logging: {}", e);
+        return;
     }
 
     info!("Starting Buoy simulation");
