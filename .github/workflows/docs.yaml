@@ -1,0 +1,76 @@
+name: Documentation
+
+# Run on version tags and manual triggers
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+  workflow_dispatch:
+
+jobs:
+  docs:
+    name: Generate and Deploy Documentation
+    runs-on: ubuntu-latest
+    # Required permissions for GitHub Pages
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
+    steps:
+      # Get the code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Install Rust and documentation tools
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rust-docs
+
+      # Speed up builds with caching
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: docs
+
+      # Generate documentation
+      - name: Generate docs
+        run: |
+          # Build API documentation for all crates
+          cargo doc --no-deps --document-private-items --all-features
+          
+          # Create docs directory and copy documentation
+          mkdir -p target/doc/docs
+          cp README.md target/doc/docs/
+          cp -r docs/* target/doc/docs/ 2>/dev/null || true
+          
+          # Create landing page that redirects to main crate docs
+          cat > target/doc/index.html <<EOF
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <meta http-equiv="refresh" content="0;url=buoy_sim/index.html">
+              <title>Buoy Documentation</title>
+          </head>
+          <body>
+              <p>Redirecting to <a href="buoy_sim/index.html">main documentation</a>...</p>
+          </body>
+          </html>
+          EOF
+
+      # Configure GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        with:
+          static_site_generator: generic
+
+      # Upload the documentation
+      - name: Upload docs
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: target/doc
+
+      # Deploy to GitHub Pages
+      - name: Deploy
+        uses: actions/deploy-pages@v4 

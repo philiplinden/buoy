@@ -1,13 +1,16 @@
 [package]
 name = "buoy_core"
 version = "0.1.0"
-description = "Core logic for buoyancy simulation"
-edition = { workspace = true }
-authors = { workspace = true }
-license = { workspace = true }
+edition = "2024"
+description = "Legacy core physics and simulation code"
+
+[lib]
+path = "src/lib.rs"
 
 [dependencies]
 bevy = { workspace = true }
+nalgebra = { workspace = true }
+serde = { workspace = true }
 avian3d = { workspace = true }
 uom = { workspace = true }
 log = { workspace = true }

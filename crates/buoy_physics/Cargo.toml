@@ -1,8 +1,8 @@
 [package]
-name = "buoy_aero"
+name = "buoy_physics"
 version = "0.1.0"
 edition = "2024"
-description = "Advanced aerodynamics modeling for buoyant bodies"
+description = "Core physics calculations for buoyant bodies"
 
 [lib]
 path = "src/lib.rs"

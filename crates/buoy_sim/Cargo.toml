@@ -1,16 +1,16 @@
 [package]
 name = "buoy_sim"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 description = "Core simulation engine for buoyant bodies"
 
 [lib]
 path = "src/lib.rs"
 
 [dependencies]
-bevy = { version = "0.13", features = ["dynamic_linking"] }
+bevy = { workspace = true }
 buoy_physics = { path = "../buoy_physics" }
 buoy_aero = { path = "../buoy_aero" }
 buoy_atmo = { path = "../buoy_atmo" }
 buoy_common = { path = "../buoy_common" }
-serde = { version = "1.0", features = ["derive"] }
+serde = { workspace = true }

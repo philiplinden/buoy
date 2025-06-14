@@ -1,14 +1,16 @@
 [package]
 name = "buoy_atmo"
 version = "0.1.0"
-description = "Atmosphere models"
-edition = { workspace = true }
-authors = { workspace = true }
-license = { workspace = true }
+edition = "2024"
+description = "U.S. Standard Atmosphere 1976 implementation"
+
+[lib]
+path = "src/lib.rs"
 
 [dependencies]
-buoy_core = {path = "../buoy_core"}
 bevy = { workspace = true }
+serde = { workspace = true }
+buoy_core = {path = "../buoy_core"}
 uom = { workspace = true }
 log = { workspace = true }
 tracing = { workspace = true }

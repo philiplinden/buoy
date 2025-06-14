@@ -2,21 +2,27 @@
 resolver = "2" # Important for Bevy
 members = [
     "crates/buoy_core",
-    "crates/buoy_atmo", "crates/buoy_aero", "crates/buoy_sim", "crates/buoy_common",
+    "crates/buoy_atmo",
+    "crates/buoy_aero",
+    "crates/buoy_sim",
+    "crates/buoy_common",
 ]
 
 default-members = [
     "crates/buoy_core",
     "crates/buoy_atmo",
+    "crates/buoy_aero",
+    "crates/buoy_sim",
+    "crates/buoy_common",
 ]
 
 # Default binary to run when using `cargo run` from workspace root
 [workspace.metadata.bin]
-default = "buoy-server"
+default = "buoy_sim"
 
 # Alternatively, you can set the default member to run
 # This makes `cargo run` from root run the buoy-server binary
-default-run = "buoy-server"
+default-run = "buoy_sim"
 
 [workspace.package]
 version = "0.1.0"
@@ -30,32 +36,34 @@ license-file = "LICENSE-APACHE"
 # Shared dependencies with fixed versions
 bevy = { version = "0.16.1", default-features = false, features = [
     "bevy_state",
-    "bevy_render", # needed for working with meshes, even without rendering to the screen
-    "bevy_asset", # needed for working with assets, including configs
+    "bevy_render",     # needed for working with meshes, even without rendering to the screen
+    "bevy_asset",      # needed for working with assets, including configs
     "multi_threaded",
     "dynamic_linking", # Improve compile times for dev builds by linking Bevy as a dynamic library.
-    "track_location", # Improve error messages coming from Bevy
+    "track_location",  # Improve error messages coming from Bevy
 ] }
 
 # Physics engine.
 avian3d = "0.3.1"
 # Physical units library for unit conversions and calculations.
 uom = "0.37.0"
-bevy_remote = "0.16.0"
+bevy_remote = "0.16.1"
 # Error handling
-thiserror = "1.0"
+thiserror = "2.0.12"
 # Property-based testing
-proptest = "1.4"
+proptest = "1.7.0"
 # Compile low-severity logs out of native builds for performance.
-log = { version = "0.4", features = [
+log = { version = "0.4.27", features = [
     "max_level_debug",
     "release_max_level_warn",
 ] }
 # Compile low-severity logs out of web builds for performance.
-tracing = { version = "0.1", features = [
+tracing = { version = "0.1.41", features = [
     "max_level_debug",
     "release_max_level_warn",
 ] }
+nalgebra = "0.33.2"
+serde = "1.0.219"
 
 # TIP FROM TheBevyFlock/bevy_new_2d:
 # Your web builds will start failing if you add a dependency that pulls in `getrandom` v0.3+.

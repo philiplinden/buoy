@@ -1,0 +1,89 @@
+[changelog]
+# changelog header
+header = """
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+"""
+# template for the changelog body
+body = """
+{% if version %}\
+## [{{ version }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}\
+## [Unreleased]
+{% endif %}\
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | upper_first }}
+{% for commit in commits %}
+- {{ commit.message | upper_first }}\
+{% endfor %}
+{% endfor %}
+"""
+# template for the changelog footer
+footer = """
+{% if version %}
+[{{ version }}]: https://github.com/philiplinden/buoy/compare/{{ previous.version }}...{{ version }}
+{% else %}
+[Unreleased]: https://github.com/philiplinden/buoy/compare/{{ latest.version }}...HEAD
+{% endif %}
+"""
+
+[git]
+# regex for parsing and grouping commits
+conventional_commits = true
+# filter out the commits that are not conventional
+filter_unconventional = true
+# process each line of a commit as an individual commit
+split_commits = false
+# regex for pre-processing the commit messages
+commit_preprocessors = [
+    { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "([#${2}](https://github.com/philiplinden/buoy/issues/${2}))" },
+]
+# regex for parsing and grouping commits
+commit_parsers = [
+    { message = "^feat", group = "Features", default_scope = "general" },
+    { message = "^fix", group = "Bug Fixes", default_scope = "general" },
+    { message = "^docs", group = "Documentation", default_scope = "general" },
+    { message = "^style", group = "Style", default_scope = "general" },
+    { message = "^refactor", group = "Refactor", default_scope = "general" },
+    { message = "^perf", group = "Performance", default_scope = "general" },
+    { message = "^test", group = "Testing", default_scope = "general" },
+    { message = "^build", group = "Build", default_scope = "general" },
+    { message = "^ci", group = "CI", default_scope = "general" },
+    { message = "^chore", group = "Chore", default_scope = "general" },
+    { message = "^revert", group = "Revert", default_scope = "general" },
+]
+
+# protect breaking changes from being skipped due to matching a skipping commit_parser
+protect_breaking_commits = false
+# filter out the commits that are not matched by commit parsers
+filter_commits = false
+# glob pattern for matching git tags
+tag_pattern = "v[0-9]*"
+# regex for skipping tags
+skip_tags = "^$"
+# regex for ignoring tags
+ignore_tags = "^$"
+# sort the tags topologically
+topo_order = false
+# sort the commits inside sections by oldest/newest order
+sort_commits = "oldest"
+
+[workspace]
+# path to the workspace root
+path = "."
+# path to the changelog file
+changelog_path = "CHANGELOG.md"
+# path to the git directory
+git_path = "."
+# path to the workspace members
+members = [
+    "crates/buoy_core",
+    "crates/buoy_atmo",
+    "crates/buoy_aero",
+    "crates/buoy_sim",
+    "crates/buoy_common",
+] 

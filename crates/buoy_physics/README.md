@@ -32,6 +32,7 @@ let force = drag.calculate_force();
 
 ## Dependencies
 
+- `bevy`: Game engine and ECS framework
 - `nalgebra`: Vector and matrix operations
 - `serde`: Serialization support
 

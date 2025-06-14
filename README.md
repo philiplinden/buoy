@@ -144,6 +144,91 @@ Each crate should include:
 - Machine learning integration
 - Distributed simulation
 
+## Release Process
+
+The project uses semantic versioning and automated release workflows. Here's how to create a new release:
+
+### 1. Prepare Release
+```bash
+# Update version in Cargo.toml
+# Make sure all changes are committed
+git add Cargo.toml
+git commit -m "chore: bump version to X.Y.Z"
+```
+
+### 2. Create and Push Tag
+```bash
+git tag vX.Y.Z
+git push origin vX.Y.Z
+```
+
+### 3. Automated Steps
+The following steps are handled automatically by GitHub Actions:
+- Changelog generation from conventional commits
+- Creation of GitHub Release with changelog
+- PR creation with changelog updates
+- Build and packaging of release artifacts
+
+### 4. Review and Publish
+- Review and merge the changelog PR
+- The release will be automatically populated with:
+  - Changelog in description
+  - CHANGELOG.md as artifact
+  - Build artifacts from release workflow
+
+### Commit Convention
+All commits should follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+- `feat:` - New features
+- `fix:` - Bug fixes
+- `docs:` - Documentation changes
+- `style:` - Code style changes
+- `refactor:` - Code refactoring
+- `perf:` - Performance improvements
+- `test:` - Adding or modifying tests
+- `chore:` - Maintenance tasks
+
+## Documentation
+
+The project documentation is automatically generated and deployed to GitHub Pages with each release. Documentation includes:
+
+- API documentation for all crates
+- README and additional documentation from the `docs/` directory
+- Code examples and usage guides
+
+### Documentation Structure
+
+- `docs/` - Additional documentation and guides
+  - `architecture.md` - System architecture overview
+  - `development.md` - Development setup and guidelines
+  - `api/` - API-specific documentation
+  - `examples/` - Code examples and tutorials
+
+### Writing Documentation
+
+1. **Code Documentation**
+   ```rust
+   /// Brief description
+   ///
+   /// Detailed explanation
+   /// 
+   /// # Examples
+   /// ```
+   /// use my_crate::MyStruct;
+   /// let instance = MyStruct::new();
+   /// ```
+   pub struct MyStruct;
+   ```
+
+2. **Additional Documentation**
+   - Place markdown files in the `docs/` directory
+   - Use relative links to other documentation
+   - Include code examples where relevant
+
+### Viewing Documentation
+
+- Latest release: [https://philiplinden.github.io/buoy/](https://philiplinden.github.io/buoy/)
+- Local development: `cargo doc --open`
+
 ## License
 
 Except where noted (below and/or in individual files), all code in this
