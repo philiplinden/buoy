@@ -30,7 +30,6 @@ simulation.run();
 - `buoy_aero`: Advanced aerodynamics modeling
 - `buoy_atmo`: Atmosphere model
 - `buoy_common`: Common utilities
-- `serde`: Serialization support
 
 ## Testing
 

@@ -12,18 +12,26 @@ name = "buoy"
 path = "src/main.rs"
 
 [dependencies]
-bevy = { workspace = true }
-tracing = { workspace = true }
-tracing-subscriber = { version = "0.3", features = ["env-filter", "json", "time"] }
-serde = { workspace = true }
-serde_json = { workspace = true }
 buoy_physics = { path = "../buoy_physics" }
 buoy_aero = { path = "../buoy_aero" }
 buoy_atmo = { path = "../buoy_atmo" }
 buoy_common = { path = "../buoy_common" }
+bevy = { workspace = true, features = [
+    "bevy_core_pipeline",
+    "bevy_color",
+    "bevy_gizmos",
+    "default_font",
+    "bevy_text",
+    "bevy_window",
+    "bevy_winit",
+    "bevy_picking",
+    "bevy_mesh_picking_backend",
+    "bevy_pbr",
+    "tonemapping_luts",
+] }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
 
 [features]
 default = ["dev"]
-dev = [
-    "bevy/bevy_debug_stepping",
-]
+dev = ["bevy/bevy_debug_stepping"]

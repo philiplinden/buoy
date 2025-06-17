@@ -2,7 +2,7 @@ pub mod constants;
 pub mod geometry;
 pub mod runtime;
 pub mod units;
-// pub mod config;
+pub mod config;
 
 use bevy::{app::PluginGroupBuilder, prelude::*};
 
@@ -14,5 +14,6 @@ impl PluginGroup for BuoyCommonPlugins {
         PluginGroupBuilder::start::<Self>()
             .add(units::FormattedUnitsPlugin)
             .add(runtime::PausableSystemsPlugin)
+            .add(runtime::TracingPlugin)
     }
 }

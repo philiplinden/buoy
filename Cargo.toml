@@ -3,12 +3,12 @@ resolver = "2" # Important for Bevy
 members = [
     # Common functionality
     "crates/buoy_common",
-    
+
     # Physics and simulation
     "crates/buoy_physics",
     "crates/buoy_atmo",
     "crates/buoy_aero",
-    
+
     # Application
     "crates/buoy_sim",
 ]
@@ -37,36 +37,31 @@ license-file = "LICENSE-APACHE"
 [workspace.dependencies]
 # Shared dependencies with fixed versions
 bevy = { version = "0.16.1", default-features = false, features = [
+    "std",             # we are not using no-std
     "bevy_state",      # needed for working with Bevy states
     "bevy_render",     # needed for working with meshes, even without rendering to the screen
     "bevy_asset",      # needed for working with assets, including configs
+    "bevy_log",        # needed for logging and tracing
+    "async_executor",  # a default feature for task execution
     "multi_threaded",  # performance enhancement, normally a default feature
     "dynamic_linking", # Improve compile times for dev builds by linking Bevy as a dynamic library.
     "track_location",  # Improve error messages coming from Bevy
 ] }
-
 # Physics engine.
 avian3d = "0.3.1"
+# Remote protocol for interfacing with Bevy.
+bevy_remote = "0.16.1"
 # Physical units library for unit conversions and calculations.
 uom = "0.37.0"
-bevy_remote = "0.16.1"
-# Error handling
-thiserror = "2.0.12"
 # Property-based testing
 proptest = "1.7.0"
-# Compile low-severity logs out of native builds for performance.
-log = { version = "0.4.27", features = [
-    "max_level_info",
-    "release_max_level_warn",
-] }
-# Compile low-severity logs out of web builds for performance.
+# Tracing for logging.
 tracing = { version = "0.1.41", features = [
-    "max_level_info",
-    "release_max_level_warn",
+    "attributes",             # For function tracing
+    "log",                    # For compatibility with Bevy's logging
+    "release_max_level_warn"  # Performance optimization
 ] }
-nalgebra = "0.33.2"
-serde = "1.0.219"
-serde_json = "1.0.107"
+tracing-subscriber = "0.3.19"
 
 # TIP FROM TheBevyFlock/bevy_new_2d:
 # Your web builds will start failing if you add a dependency that pulls in `getrandom` v0.3+.

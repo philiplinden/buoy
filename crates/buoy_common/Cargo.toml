@@ -9,6 +9,6 @@ path = "src/lib.rs"
 
 [dependencies]
 bevy = { workspace = true }
-serde = { workspace = true }
 uom = { workspace = true }
 tracing = { workspace = true }
+tracing-subscriber = { workspace = true }

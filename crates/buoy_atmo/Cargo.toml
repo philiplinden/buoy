@@ -8,14 +8,12 @@ description = "U.S. Standard Atmosphere 1976 implementation"
 path = "src/lib.rs"
 
 [dependencies]
-bevy = { workspace = true }
-serde = { workspace = true }
 buoy_common = { path = "../buoy_common" }
 buoy_physics = { path = "../buoy_physics" }
+bevy = { workspace = true }
 uom = { workspace = true }
-log = { workspace = true }
 tracing = { workspace = true }
-thiserror.workspace = true
+tracing-subscriber = { workspace = true }
 
 [features]
 default = [
