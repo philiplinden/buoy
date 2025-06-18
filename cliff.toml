@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 """
+
 # template for the changelog body
 body = """
 {% if version %}\
@@ -15,68 +16,124 @@ body = """
 {% else %}\
 ## [Unreleased]
 {% endif %}\
-{% for group, commits in commits | group_by(attribute="group") %}
-### {{ group | upper_first }}
-{% for commit in commits %}
-- {{ commit.message | upper_first }}\
+
+{% for group, commits in commits | filter(attribute="merge_commit", value=false) | group_by(attribute="group") %}
+### {{ group | striptags | trim | upper_first }}
+{% for commit in commits | unique(attribute="message") %}
+- {{ commit.message | upper_first }}
 {% endfor %}
+
 {% endfor %}
 """
+
 # template for the changelog footer
 footer = """
 {% if version %}
 [{{ version }}]: https://github.com/philiplinden/buoy/compare/{{ previous.version }}...{{ version }}
 {% else %}
-[Unreleased]: https://github.com/philiplinden/buoy/compare/HEAD...HEAD
+[Unreleased]: https://github.com/philiplinden/buoy/compare/{{ previous.version | default("v0.1.0") }}...HEAD
 {% endif %}
 """
 
 [git]
-# regex for parsing and grouping commits
+# parse conventional commits
 conventional_commits = true
 # filter out the commits that are not conventional
 filter_unconventional = true
 # process each line of a commit as an individual commit
 split_commits = false
-# regex for pre-processing the commit messages
+
+# pre-process commit messages
 commit_preprocessors = [
-    { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "([#${2}](https://github.com/philiplinden/buoy/issues/${2}))" },
-]
-# regex for parsing and grouping commits
-commit_parsers = [
-    { message = "^feat", group = "Features", default_scope = "general" },
-    { message = "^fix", group = "Bug Fixes", default_scope = "general" },
-    { message = "^docs", group = "Documentation", default_scope = "general" },
-    { message = "^style", group = "Style", default_scope = "general" },
-    { message = "^refactor", group = "Refactor", default_scope = "general" },
-    { message = "^perf", group = "Performance", default_scope = "general" },
-    { message = "^test", group = "Testing", default_scope = "general" },
-    { message = "^build", group = "Build", default_scope = "general" },
-    { message = "^ci", group = "CI", default_scope = "general" },
-    { message = "^chore", group = "Chore", default_scope = "general" },
-    { message = "^revert", group = "Revert", default_scope = "general" },
+    # Linkify issue/PR references
+    { pattern = '\\((\\w+\\s)?#([0-9]+)\\)', replace = "([#${2}](https://github.com/philiplinden/buoy/issues/${2}))" },
+    { pattern = '\\b(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved) #(\\d+)\\b', replace = "[${1} #${2}](https://github.com/philiplinden/buoy/issues/${2})" },
+    # Clean up whitespace
+    { pattern = '\\s+', replace = ' ' },
 ]
 
-# protect breaking changes from being skipped due to matching a skipping commit_parser
-protect_breaking_commits = false
-# filter out the commits that are not matched by commit parsers
-filter_commits = false
-# glob pattern for matching git tags
+# Define commit parsers with ordered groups and emojis
+commit_parsers = [
+    # Skip empty commit bodies
+    { body = "^$", skip = true },
+
+    # Breaking changes first
+    { message = "^!", group = "<!-- 0 -->🚨 Breaking Changes" },
+
+    # Features
+    { message = "^feat", group = "<!-- 1 -->✨ Features" },
+
+    # Bug fixes
+    { message = "^fix", group = "<!-- 2 -->🐛 Bug Fixes" },
+
+    # Performance improvements
+    { message = "^perf", group = "<!-- 3 -->⚡ Performance" },
+
+    # Documentation
+    { message = "^docs", group = "<!-- 4 -->📝 Documentation" },
+
+    # Refactoring
+    { message = "^refactor", group = "<!-- 5 -->♻️ Refactoring" },
+
+    # Testing
+    { message = "^test", group = "<!-- 6 -->✅ Tests" },
+
+    # Style changes
+    { message = "^style", group = "<!-- 7 -->💄 Styles" },
+
+    # CI/CD
+    { message = "^ci", group = "<!-- 8 -->👷 CI/CD" },
+
+    # Build system
+    { message = "^build", group = "<!-- 9 -->📦 Build" },
+
+    # Chores
+    { message = "^chore", group = "<!-- 10 -->🔧 Chores" },
+
+    # Reverts
+    { message = "^revert", group = "<!-- 11 -->⏪ Reverts" },
+
+    # Default catch-all (shouldn't happen with filter_unconventional = true)
+    { message = ".*", group = "📦 Other Changes" },
+]
+
+# GitHub integration for PR labels
+[git.github]
+# Use GitHub PR labels as groups (fallback to commit types)
+commit_parsers = [
+    { field = "github.pr_labels", pattern = "breaking-change", group = "<!-- 0 -->🚨 Breaking Changes" },
+    { field = "github.pr_labels", pattern = "enhancement", group = "<!-- 1 -->✨ Features" },
+    { field = "github.pr_labels", pattern = "bug", group = "<!-- 2 -->🐛 Bug Fixes" },
+    { field = "github.pr_labels", pattern = "documentation", group = "<!-- 4 -->📝 Documentation" },
+    { field = "github.pr_labels", pattern = "refactor", group = "<!-- 5 -->♻️ Refactoring" },
+    { field = "github.pr_labels", pattern = "dependencies", group = "<!-- 9 -->📦 Dependencies" },
+]
+
+# Protect breaking changes from being skipped
+protect_breaking_commits = true
+filter_commits = true
+
+# Tag configuration
 tag_pattern = "v[0-9]*"
-# regex for skipping tags
 skip_tags = "^$"
-# regex for ignoring tags
 ignore_tags = "^$"
-# sort the tags topologically
 topo_order = false
-# sort the commits inside sections by oldest/newest order
+
+# Sort commits with newest first
 sort_commits = "newest"
 
 [workspace]
-# path to the workspace root
 path = "."
-# path to the changelog file
 changelog_path = "CHANGELOG.md"
+
+# Post-processing for the changelog
+[output]
+# Group commits by scope within each section
+group_commits = true
+# Include commit hashes in the changelog
+include_commit_hashes = true
+# Include commit authors in the changelog
+include_commit_authors = true
 # path to the git directory
 git_path = "."
 # path to the workspace members

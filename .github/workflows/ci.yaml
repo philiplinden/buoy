@@ -3,8 +3,16 @@ name: CI
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - '**/docs/**'
+      - '**/*.txt'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - '**/docs/**'
+      - '**/*.txt'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -18,7 +26,7 @@ env:
   toolchain: nightly-2025-04-03
 
 jobs:
-  # Check formatting.
+  # Check formatting first as it's the fastest check
   format:
     name: Format
     runs-on: ubuntu-latest
@@ -36,7 +44,7 @@ jobs:
       - name: Check formatting
         run: cargo fmt --all -- --check
 
-  # Check documentation.
+  # Documentation check can run in parallel with other jobs
   docs:
     name: Docs
     runs-on: ubuntu-latest
@@ -62,9 +70,9 @@ jobs:
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
 
       - name: Check documentation
-        run: cargo doc --frozen --workspace --profile ci --all-features --document-private-items --no-deps
+        run: cargo doc --locked --workspace --profile ci --all-features --document-private-items --no-deps
 
-  # Run Clippy lints.
+  # Run Clippy lints in parallel with other jobs
   clippy-lints:
     name: Clippy lints
     runs-on: ubuntu-latest
@@ -91,9 +99,15 @@ jobs:
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
 
       - name: Run Clippy lints
-        run: cargo clippy --frozen --workspace --all-targets --profile ci --all-features
+        run: |
+          cargo clippy --locked --workspace --all-targets --profile ci --all-features -- \
+            -D warnings \
+            -D clippy::all \
+            -D clippy::pedantic \
+            -D clippy::nursery \
+            -D clippy::cargo
 
-  # Run Bevy lints.
+  # Bevy lints - runs in parallel with other jobs
   bevy-lints:
     name: Bevy lints
     runs-on: ubuntu-latest
@@ -120,13 +134,21 @@ jobs:
         run: cargo fetch
 
       - name: Run Bevy lints
-        run: bevy_lint --frozen --workspace --all-targets --profile ci --all-features
+        run: bevy_lint --locked --workspace --all-targets --profile ci --all-features
 
   # Run tests.
   tests:
     name: Tests
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    strategy:
+      matrix:
+        # Test in debug mode first (faster)
+        profile: [dev]
+        # Then in release mode if debug passes
+        # include:
+        #   - profile: release
+        #     RUSTFLAGS: "-C target-cpu=native"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -151,11 +173,19 @@ jobs:
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
 
       - name: Run tests
-        run: cargo test --frozen --workspace --all-targets --profile ci --no-fail-fast
+        env:
+          RUSTFLAGS: ${{ matrix.RUSTFLAGS || env.RUSTFLAGS }} -Zcodegen-backend=cranelift
+        run: |
+          # Run tests with nextest for better performance
+          cargo install cargo-nextest --locked
+          cargo nextest run --profile ci --workspace --all-targets --no-fail-fast
 
-  # Check that the web build compiles.
+          # Run doc tests separately
+          cargo test --doc --profile ci --no-fail-fast
+
+  # Web build check - runs in parallel with other jobs
   check-web:
-    name: Check web
+    name: Web Build
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -179,5 +209,12 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
 
-      - name: Check web
-        run: cargo check --config 'profile.web.inherits="dev"' --profile ci --no-default-features --features dev --target wasm32-unknown-unknown
+      - name: Check web build
+        run: |
+          # Check web build with minimal features
+          cargo check --locked \
+            --config 'profile.web.inherits="dev"' \
+            --profile ci \
+            --no-default-features \
+            --features dev \
+            --target wasm32-unknown-unknown

@@ -140,9 +140,10 @@ strip = "debuginfo"
 # Optimize for build time in CI.
 [profile.ci]
 inherits = "dev"
-opt-level = 0
-debug = "line-tables-only"
-codegen-units = 4
-
-[profile.ci.package."*"]
-opt-level = 0
+incremental = true
+codegen-units = 16
+opt-level = 1
+debug = true
+debug-assertions = true
+overflow-checks = true
+lto = false

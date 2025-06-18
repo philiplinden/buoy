@@ -8,11 +8,6 @@ on:
       - "v[0-9]+.[0-9]+.[0-9]+*"
   # Trigger this workflow manually via workflow dispatch.
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Version number in the format `v1.2.3`"
-        required: true
-        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
