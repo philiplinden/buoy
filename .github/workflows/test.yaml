@@ -28,7 +28,7 @@ env:
 jobs:
   # Run tests.
   tests:
-    name: Tests
+    name: Unit Tests
     runs-on: ubuntu-latest
     timeout-minutes: 40
     strategy:

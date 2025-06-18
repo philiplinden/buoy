@@ -106,7 +106,7 @@ performance = "warn"
 # Compile with Performance Optimizations:
 # https://bevyengine.org/learn/quick-start/getting-started/setup/#compile-with-performance-optimizations
 
-# Enable a small amount of optimization in the dev profile.
+# Enable a small amount of optimization in the dev profile for our code.
 [profile.dev]
 opt-level = 1
 
@@ -161,3 +161,16 @@ debug = true
 debug-assertions = true
 overflow-checks = true
 lto = false
+
+# Don't use dynamic linking or multithreading in ci builds.
+[profile.ci.package.bevy]
+default-features = false
+features = [
+    "std",             # we are not using no-std
+    "bevy_state",      # needed for working with Bevy states
+    "bevy_render",     # needed for working with meshes, even without rendering to the screen
+    "bevy_asset",      # needed for working with assets, including configs
+    "bevy_log",        # needed for logging and tracing
+    "async_executor",  # a default feature for task execution
+    "track_location",  # Improve error messages coming from Bevy
+]
