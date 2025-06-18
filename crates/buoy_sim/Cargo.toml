@@ -23,6 +23,7 @@ bevy = { workspace = true, features = [
     "default_font",
     "bevy_text",
     "bevy_window",
+    "bevy_winit",
     "bevy_picking",
     "bevy_mesh_picking_backend",
     "bevy_pbr",
