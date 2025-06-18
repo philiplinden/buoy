@@ -42,34 +42,76 @@ jobs:
             done
           done
 
-          # Generate version info with next bumps
-          VERSION_INFO="## 📦 Version Bumps\n\n"
-          for member in $(cargo metadata --format-version=1 --no-deps | jq -r '.workspace_members[] | split(" ")[0]'); do
-            current_version=$(cargo metadata --format-version=1 --no-deps | \
-                           jq -r --arg m "$member" '.packages[] | select(.name == $m) | .version')
+          # Get versions from base branch
+          git fetch origin main
+          git checkout main
 
-            if [[ " ${CHANGED_CRATES[*]} " =~ " $member " ]]; then
-              # Calculate all version bumps with emojis
-              major_version=$(echo $current_version | awk -F. '{$1 = $1 + 1; $2 = 0; $3 = 0; print $1"."$2"."$3}')
-              minor_version=$(echo $current_version | awk -F. '{$2 = $2 + 1; $3 = 0; print $1"."$2"."$3}')
-              patch_version=$(echo $current_version | awk -F. '{$3 = $3 + 1; print $1"."$2"."$3}')
+          # Get all workspace members
+          IFS=$'\n' read -d '' -r -a members < <(grep -o '"[^"]*"' crates/*/Cargo.toml | tr -d '"')
 
-              VERSION_INFO+="- **$member** ($current_version): 🔴 **$major_version** / "
-              VERSION_INFO+="🟡 **$minor_version** / "
-              VERSION_INFO+="🟢 **$patch_version**\n"
-            else
-              VERSION_INFO+="- $member: $current_version\n"
+          # Switch back to PR branch
+          git checkout ${{ github.sha }}
+
+          VERSION_INFO="\n"
+
+          for member in "${members[@]}"; do
+            # Get versions from both branches
+            version_file="crates/$member/Cargo.toml"
+            if [ -f "$version_file" ]; then
+              current_version=$(grep -m1 '^version = ' "$version_file" | cut -d'"' -f2)
+              git checkout main
+              main_version=$(grep -m1 '^version = ' "$version_file" | cut -d'"' -f2)
+              git checkout ${{ github.sha }}
+
+              # If versions differ or if it's a new crate
+              if [ "$current_version" != "$main_version" ] || [ ! -f "$version_file" ]; then
+                # Determine version change type
+                if [ "$main_version" = "0.0.0" ]; then
+                  emoji="🟢"
+                  change_type="new crate"
+                else
+                  main_major=$(echo $main_version | cut -d'.' -f1)
+                  current_major=$(echo $current_version | cut -d'.' -f1)
+
+                  if [ "$current_major" -gt "$main_major" ]; then
+                    emoji="🔴"
+                    change_type="major bump"
+                  else
+                    main_minor=$(echo $main_version | cut -d'.' -f2)
+                    current_minor=$(echo $current_version | cut -d'.' -f2)
+
+                    if [ "$current_minor" -gt "$main_minor" ]; then
+                      emoji="🟡"
+                      change_type="minor bump"
+                    else
+                      emoji="🟢"
+                      change_type="patch bump"
+                    fi
+                  fi
+                fi
+
+                VERSION_INFO+="- $emoji **$member**: $main_version → $current_version ($change_type)\n"
+              fi
             fi
           done
 
-          # Add version bump legend
-          VERSION_INFO+="\n**Legend**: 🔴 major | 🟡 minor | 🟢 patch"
+          # Add legend
+          VERSION_INFO+="\n**Legend**: 🔴 major | 🟡 minor | 🟢 patch | new crate"
 
           echo "versions<<EOF" >> $GITHUB_OUTPUT
           echo -e "$VERSION_INFO" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Generate changelog
+      - name: Generate short changelog
+        run: |
+          git cliff --output short_changelog.md --from ${{ github.event.pull_request.base.sha }} --to ${{ github.sha }}
+          short_changelog=$(cat short_changelog.md)
+          echo "short_changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$short_changelog" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        id: short
+
+      - name: Generate full changelog
         uses: orhun/git-cliff-action@v3
         with:
           config: cliff.toml
@@ -77,19 +119,25 @@ jobs:
         env:
           GITHUB_REPO: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        id: generate
+        run: |
+          changelog_content=$(cat CHANGELOG.md)
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$changelog_content" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Update PR with changelog
         uses: mshick/add-pr-comment@v2
         with:
           message: |
-            ## 📋 Changelog Preview
+            ## 📝 PR Changes
+            ${{ steps.short.outputs.short_changelog }}
 
+            ## 📦 Version Changes
             ${{ steps.versions.outputs.versions }}
 
             <details>
             <summary>📜 Full Changelog</summary>
 
-            ```markdown
-            $(cat CHANGELOG.md)
-            ```
+            ${{ steps.generate.outputs.changelog }}
             </details>
