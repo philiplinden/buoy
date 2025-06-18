@@ -60,13 +60,15 @@ jobs:
           cat CHANGELOG.md >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: Update Current Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: update changelog"
-          title: "chore: update changelog"
-          body: "Update changelog for the latest release"
-          branch: ${{ github.head_ref }}
-          base: ${{ github.base_ref }}
-          delete-branch: true
+      - name: Commit changelog update
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git fetch origin
+          git checkout ${{ github.head_ref }}
+          git add CHANGELOG.md
+          git commit -m "chore: update changelog"
+          git push origin ${{ github.head_ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -27,7 +27,7 @@ footer = """
 {% if version %}
 [{{ version }}]: https://github.com/philiplinden/buoy/compare/{{ previous.version }}...{{ version }}
 {% else %}
-[Unreleased]: https://github.com/philiplinden/buoy/compare/{{ latest.version }}...HEAD
+[Unreleased]: https://github.com/philiplinden/buoy/compare/HEAD...HEAD
 {% endif %}
 """
 
@@ -86,4 +86,4 @@ members = [
     "crates/buoy_aero",
     "crates/buoy_atmo",
     "crates/buoy_sim",
-] 
+]
