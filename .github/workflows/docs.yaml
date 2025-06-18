@@ -20,105 +20,90 @@ jobs:
           fetch-depth: 0
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Install CLI Tools
+        run: |
+          cargo install semver-cli git-cliff
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          export PATH="$HOME/.cargo/bin:$PATH"
+
+      - name: Verify CLI Tools
+        run: |
+          semver --help || echo "semver-cli not found"
+          git-cliff --version || echo "git-cliff not found"
+
+      - name: Fetch base branch
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}:base
 
       - name: Get changed crates and versions
         id: versions
         run: |
-          # Get all workspace members
-          IFS=$'\n' read -d '' -r -a members < <(grep -o '"[^"]*"' crates/*/Cargo.toml | tr -d '"')
-          
-          # Initialize version info
-          VERSION_INFO="\n"
-          FOUND_CHANGES=false
+          members=$(cargo metadata --no-deps --format-version=1 \
+            | jq -r '.packages[].name')
 
-          # Check each crate for version changes
-          for member in "${members[@]}"; do
-            version_file="crates/$member/Cargo.toml"
-            
-            # Get current version from PR
-            current_version=$(git show ${{ github.sha }}:"$version_file" 2>/dev/null | grep -m1 '^version = ' | cut -d'"' -f2 || echo "")
-            
-            # Get main branch version
-            main_version=$(git show ${{ github.event.pull_request.base.sha }}:"$version_file" 2>/dev/null | grep -m1 '^version = ' | cut -d'"' -f2 || echo "")
-            
-            # Skip if version couldn't be determined or hasn't changed
-            [ -z "$current_version" ] && continue
-            [ -z "$main_version" ] && main_version="0.0.0"
-            [ "$current_version" = "$main_version" ] && continue
-            
-            FOUND_CHANGES=true
-            
-            # Determine version change type
-            if [ "$main_version" = "0.0.0" ]; then
-              emoji="🟢"
-              change_type="new crate"
-            else
-              IFS='.' read -r -a main_parts <<< "$main_version"
-              IFS='.' read -r -a current_parts <<< "$current_version"
-              
-              main_major=${main_parts[0]}
-              current_major=${current_parts[0]}
-              
-              if [ "$current_major" -gt "$main_major" ]; then
-                emoji="🔴"
-                change_type="major bump"
-              else
-                main_minor=${main_parts[1]:-0}
-                current_minor=${current_parts[1]:-0}
-                
-                if [ "$current_minor" -gt "$main_minor" ]; then
-                  emoji="🟡"
-                  change_type="minor bump"
-                else
-                  emoji="🟢"
-                  change_type="patch bump"
-                fi
-              fi
+          output="## 📦 Version Changes\n"
+          changed=false
+
+          for crate in $members; do
+            path="crates/$crate/Cargo.toml"
+            base_ver=$(git show base:"$path" 2>/dev/null \
+              | grep -m1 '^version =' | cut -d'"' -f2 || echo "0.0.0")
+            head_ver=$(git show HEAD:"$path" 2>/dev/null \
+              | grep -m1 '^version =' | cut -d'"' -f2 || continue)
+
+            if semver greater "$head_ver" "$base_ver"; then
+              changed=true
+              kind=$(semver diff "$base_ver" "$head_ver")
+              emoji=$(
+                case "$kind" in
+                  major) echo "🔴" ;;
+                  minor) echo "🟡" ;;
+                  patch) echo "🟢" ;;
+                  *) echo "🔷" ;;
+                esac
+              )
+              output+="- $emoji **$crate**: $base_ver → $head_ver ($kind bump)\n"
             fi
-            
-            VERSION_INFO+="- $emoji **$member**: $main_version → $current_version ($change_type)\n"
           done
-          
-          # If no changes found, indicate that
-          if [ "$FOUND_CHANGES" = false ]; then
-            VERSION_INFO="\nNo version changes detected in this PR.\n"
+
+          if [ "$changed" = false ]; then
+            output+="\n_No version changes detected in this PR._\n"
           fi
-          
-          # Add legend
-          VERSION_INFO+="\n**Legend**: 🔴 major | 🟡 minor | 🟢 patch | new crate"
-          
-          # Output the version info
+
           echo "versions<<EOF" >> $GITHUB_OUTPUT
-          echo -e "$VERSION_INFO" >> $GITHUB_OUTPUT
+          echo -e "$output" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Generate short changelog
-        run: |
-          git cliff --output short_changelog.md --from ${{ github.event.pull_request.base.sha }} --to ${{ github.sha }}
-          short_changelog=$(cat short_changelog.md)
-          echo "short_changelog<<EOF" >> $GITHUB_OUTPUT
-          echo "$short_changelog" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
         id: short
+        run: |
+          git-cliff --output short_changelog.md --from base --to HEAD
+          echo "short_changelog<<EOF" >> $GITHUB_OUTPUT
+          cat short_changelog.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Generate full changelog
-        uses: orhun/git-cliff-action@v3
+        uses: orhun/git-cliff-action@v4
+        id: generate
         with:
           config: cliff.toml
           args: --output CHANGELOG.md
         env:
+          OUTPUT: CHANGELOG.md
           GITHUB_REPO: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        id: generate
 
       - name: Save full changelog content
-        run: |
-          changelog_content=$(cat CHANGELOG.md)
-          echo "changelog<<EOF" >> $GITHUB_OUTPUT
-          echo "$changelog_content" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
         id: save_changelog
+        run: |
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          cat CHANGELOG.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Update PR with changelog
         uses: mshick/add-pr-comment@v2
@@ -135,6 +120,7 @@ jobs:
 
             ${{ steps.generate.outputs.changelog }}
             </details>
+
   generate-docs:
     name: Cargo
     runs-on: ubuntu-latest
@@ -142,35 +128,27 @@ jobs:
       docs-path: ${{ steps.generate.outputs.docs-path }}
 
     steps:
-      # Get the code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Install Rust and documentation tools
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           components: rust-docs
 
-      # Speed up builds with caching
       - name: Cache dependencies
         uses: Swatinem/rust-cache@v2
         with:
           shared-key: docs
 
-      # Generate documentation
       - name: Generate docs
         id: generate
         run: |
-          # Build API documentation for all crates
           cargo doc --no-deps --profile ci --document-private-items --all-features
-
-          # Create docs directory and copy documentation
           mkdir -p target/doc/docs
           cp README.md target/doc/docs/
           cp -r docs/* target/doc/docs/ 2>/dev/null || true
 
-          # Create landing page that redirects to main crate docs
           cat > target/doc/index.html <<EOF
           <!DOCTYPE html>
           <html>
@@ -191,29 +169,24 @@ jobs:
     runs-on: ubuntu-latest
     needs: generate-docs
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    # Required permissions for GitHub Pages
     permissions:
       contents: write
       pages: write
       id-token: write
 
     steps:
-      # Get the code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Configure GitHub Pages
       - name: Setup Pages
         uses: actions/configure-pages@v4
         with:
           static_site_generator: generic
 
-      # Upload the documentation
       - name: Upload docs
         uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ needs.generate-docs.outputs.docs-path }}
 
-      # Deploy to GitHub Pages
       - name: Deploy
         uses: actions/deploy-pages@v4
