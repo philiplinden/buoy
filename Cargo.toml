@@ -34,6 +34,7 @@ bevy = { version = "0.16.1", default-features = false, features = [
     "async_executor", # a default feature for task execution
     "multi_threaded", # performance enhancement, normally a default feature
     "track_location", # Improve error messages coming from Bevy
+    "dynamic_linking",# Improve compile times for dev builds by linking Bevy as a dynamic library
 ] }
 
 # Physics engine.
@@ -118,20 +119,6 @@ opt-level = 3
 [profile.dev.package.wgpu-types]
 debug-assertions = false
 
-# Enable dynamic linking in dev profile
-[profile.dev.package."bevy:0.16.1"]
-features = [
-    "std",             # we are not using no-std
-    "bevy_state",      # needed for working with Bevy states
-    "bevy_render",     # needed for working with meshes, even without rendering to the screen
-    "bevy_asset",      # needed for working with assets, including configs
-    "bevy_log",        # needed for logging and tracing
-    "async_executor",  # a default feature for task execution
-    "multi_threaded",  # performance enhancement, normally a default feature
-    "track_location",  # Improve error messages coming from Bevy
-    "dynamic_linking", # Improve compile times for dev builds by linking Bevy as a dynamic library
-]
-
 [profile.release]
 # Compile the entire crate as one unit.
 # Slows compile times, marginal improvements.
@@ -160,15 +147,3 @@ debug = true
 debug-assertions = true
 overflow-checks = true
 lto = false
-
-# Don't use dynamic linking or multithreading in ci builds.
-[profile.ci.package."bevy:0.16.1"]
-features = [
-    "std",             # we are not using no-std
-    "bevy_state",      # needed for working with Bevy states
-    "bevy_render",     # needed for working with meshes, even without rendering to the screen
-    "bevy_asset",      # needed for working with assets, including configs
-    "bevy_log",        # needed for logging and tracing
-    "async_executor",  # a default feature for task execution
-    "track_location",  # Improve error messages coming from Bevy
-]

@@ -82,7 +82,7 @@ jobs:
       - name: Generate short changelog
         id: short
         run: |
-          git-cliff --output short_changelog.md --from base --to HEAD
+          git-cliff --output short_changelog.md base..HEAD
           echo "short_changelog<<EOF" >> $GITHUB_OUTPUT
           cat short_changelog.md >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -94,7 +94,7 @@ jobs:
           config: cliff.toml
           args: --output CHANGELOG.md
         env:
-          OUTPUT: CHANGELOG.md
+          GITHUB_OUTPUT: CHANGELOG.md
           GITHUB_REPO: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -112,7 +112,6 @@ jobs:
             ## 📝 PR Changes
             ${{ steps.short.outputs.short_changelog }}
 
-            ## 📦 Version Changes
             ${{ steps.versions.outputs.versions }}
 
             <details>

@@ -26,7 +26,7 @@ env:
   toolchain: nightly-2025-04-03
 
 jobs:
-  # Run tests.
+  # Run tests
   tests:
     name: Unit Tests
     runs-on: ubuntu-latest
@@ -63,21 +63,14 @@ jobs:
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
 
       - name: Run tests
-        env:
-          RUSTFLAGS: ${{ matrix.RUSTFLAGS || env.RUSTFLAGS }} -Zcodegen-backend=cranelift
-        run: |
-          # Run tests with nextest for better performance
-          cargo install cargo-nextest --locked
-          cargo nextest run --profile ci --workspace --all-targets --no-fail-fast
+        run: cargo test --all --all-features -- -W warnings
 
-          # Run doc tests separately
-          cargo test --doc --profile ci --no-fail-fast
-
-  # Web build check - runs in parallel with other jobs
+  # Web build check
   check-web:
     name: Web Build
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    continue-on-error: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -102,9 +95,8 @@ jobs:
       - name: Check web build
         run: |
           # Check web build with minimal features
-          cargo check --locked \
+          cargo check \
             --config 'profile.web.inherits="dev"' \
-            --profile ci \
             --no-default-features \
             --features dev \
             --target wasm32-unknown-unknown

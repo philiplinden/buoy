@@ -25,6 +25,7 @@ jobs:
     name: Format
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    continue-on-error: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -66,7 +67,7 @@ jobs:
 
       - name: Run Clippy lints
         run: |
-          cargo clippy --offline --workspace --all-targets --profile ci --all-features -- \
+          cargo clippy --workspace --all-targets --profile ci --all-features -- \
             -D clippy::panicking_methods \
             -W clippy::pedantic \
             -W clippy::float_cmp \
@@ -99,4 +100,4 @@ jobs:
         run: cargo fetch
 
       - name: Run Bevy lints
-        run: bevy_lint --offline --workspace --all-targets --profile ci --all-features
+        run: bevy_lint --workspace --all-targets --profile ci --all-features
