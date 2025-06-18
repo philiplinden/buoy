@@ -1,10 +1,12 @@
 name: Documentation
 
-# Run on version tags and manual triggers
+# Run on version tags, pull requests to main, and manual triggers
 on:
   push:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+*"
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -39,12 +41,12 @@ jobs:
         run: |
           # Build API documentation for all crates
           cargo doc --no-deps --document-private-items --all-features
-          
+
           # Create docs directory and copy documentation
           mkdir -p target/doc/docs
           cp README.md target/doc/docs/
           cp -r docs/* target/doc/docs/ 2>/dev/null || true
-          
+
           # Create landing page that redirects to main crate docs
           cat > target/doc/index.html <<EOF
           <!DOCTYPE html>
@@ -73,4 +75,4 @@ jobs:
 
       # Deploy to GitHub Pages
       - name: Deploy
-        uses: actions/deploy-pages@v4 
+        uses: actions/deploy-pages@v4
