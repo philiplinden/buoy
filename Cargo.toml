@@ -119,8 +119,7 @@ opt-level = 3
 debug-assertions = false
 
 # Enable dynamic linking in dev profile
-[profile.dev.package.bevy]
-default-features = false
+[profile.dev.package."bevy:0.16.1"]
 features = [
     "std",             # we are not using no-std
     "bevy_state",      # needed for working with Bevy states
@@ -163,8 +162,7 @@ overflow-checks = true
 lto = false
 
 # Don't use dynamic linking or multithreading in ci builds.
-[profile.ci.package.bevy]
-default-features = false
+[profile.ci.package."bevy:0.16.1"]
 features = [
     "std",             # we are not using no-std
     "bevy_state",      # needed for working with Bevy states

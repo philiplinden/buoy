@@ -36,7 +36,6 @@ jobs:
           components: rustfmt
 
       - name: Check formatting
-        continue-on-error: true
         run: cargo fmt --all -- --check
 
   # Run Clippy lints
@@ -66,9 +65,8 @@ jobs:
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
 
       - name: Run Clippy lints
-        continue-on-error: true
         run: |
-          cargo clippy --locked --workspace --all-targets --profile ci --all-features -- \
+          cargo clippy --offline --workspace --all-targets --profile ci --all-features -- \
             -D clippy::panicking_methods \
             -W clippy::pedantic \
             -W clippy::float_cmp \
@@ -101,5 +99,4 @@ jobs:
         run: cargo fetch
 
       - name: Run Bevy lints
-        continue-on-error: true
-        run: bevy_lint --locked --workspace --all-targets --profile ci --all-features
+        run: bevy_lint --offline --workspace --all-targets --profile ci --all-features
