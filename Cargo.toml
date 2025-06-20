@@ -1,31 +1,48 @@
-[workspace]
-resolver = "2" # Important for Bevy
-members = [
-    "crates/buoy-core",
-    "crates/buoy-ui"
-]
-
-default-members = [
-    "crates/buoy-ui"
-]
-
-[workspace.package]
+[package]
+name = "buoy"
 version = "0.1.0"
+edition = "2024"
 authors = ["Philip Linden <lindenphilipj@gmail.com>"]
+description = "A buoyancy physics simulator built with Bevy"
 readme = "README.md"
-edition = "2021"
-license = "MIT or Apache-2.0"
-license-file = "LICENSE-APACHE"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/philiplinden/buoy"
+keywords = ["physics", "simulation", "bevy"]
+categories = ["simulation"]
 
-[workspace.dependencies]
-# Shared dependencies with fixed versions
-bevy = { version = "0.15.2", default-features = false, features = [
+[dependencies]
+bevy = { version = "0.16.1", default-features = false, features = [
+    "bevy_asset",
     "bevy_state",
-    "bevy_render", # needed for working with meshes, even without rendering
+    "bevy_render",         # Required for mesh handling
+    "bevy_pbr",            # Required for mesh processing
     "multi_threaded",
+    "sysinfo_plugin",
+    "bevy_log",
+    "trace",
 ] }
-avian3d = "0.2.1"
+avian3d = { version = "0.3.1", features = ["parallel", "enhanced-determinism"] }
+uom = "0.37.0"
 big_space = "0.9.1"
+
+[features]
+default = ["render", "debug"]
+render = [
+    "bevy/bevy_core_pipeline",
+    "bevy/bevy_gizmos",
+    "bevy/bevy_color",
+    "bevy/bevy_mesh_picking_backend",
+    "bevy/bevy_window",
+    "bevy/bevy_text",
+    "bevy/default_font",
+    "bevy/bevy_window",
+    "bevy/bevy_winit",
+    "bevy/x11",
+    "bevy/wayland",
+]
+headless = []
+debug = ["bevy/bevy_dev_tools", "bevy/dynamic_linking", "bevy/track_location"]
+ci = ["headless", "bevy/bevy_ci_testing"]
 
 # Compile with Performance Optimizations:
 # https://bevyengine.org/learn/quick-start/getting-started/setup/#compile-with-performance-optimizations
