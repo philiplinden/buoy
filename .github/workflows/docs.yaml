@@ -1,0 +1,214 @@
+name: Docs
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  update-changelog:
+    name: Changelog
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Install CLI Tools
+        run: |
+          cargo install semver-cli git-cliff
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          export PATH="$HOME/.cargo/bin:$PATH"
+
+      - name: Verify CLI Tools
+        run: |
+          semver --help || echo "semver-cli not found"
+          git-cliff --version || echo "git-cliff not found"
+
+      - name: Fetch base branch
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}:main
+
+      - name: Get version changes
+        id: versions
+        run: |
+          output="## 📦 Version Changes\n"
+          
+          # Get versions from Cargo.toml
+          base_ver=$(git show main:Cargo.toml 2>/dev/null \
+            | grep -m1 '^version =' | cut -d'"' -f2 || echo "0.0.0")
+          head_ver=$(grep -m1 '^version =' Cargo.toml | cut -d'"' -f2)
+          
+          # Analyze commits to suggest version bump
+          bump_level="patch"  # Default to patch
+          
+          # Check for breaking changes (major version bump)
+          if git log main..HEAD --grep='^[^!]*!\|^BREAKING CHANGE' --extended-regexp --no-merges | grep -q .; then
+            bump_level="major"
+          # Check for new features (minor version bump)
+          elif git log main..HEAD --grep='^feat' --extended-regexp --no-merges | grep -q .; then
+            bump_level="minor"
+          # If only fix, docs, etc. (patch version bump is already set)
+          fi
+          
+          # Suggest next version
+          suggested_ver=$(semver -i $bump_level $base_ver)
+          
+          if semver greater "$head_ver" "$base_ver"; then
+            # If version was manually updated, show the change
+            kind=$(semver diff "$base_ver" "$head_ver")
+            emoji=$(
+              case "$kind" in
+                major) echo "🔴" ;;
+                minor) echo "🟡" ;;
+                patch) echo "🟢" ;;
+                *) echo "🔷" ;;
+              esac
+            )
+            output+="- $emoji **buoy**: $base_ver → $head_ver ($kind bump)\n"
+            
+            # Check if the version bump matches the suggested level
+            suggested_kind=$(semver diff "$base_ver" "$suggested_ver")
+            if [ "$suggested_kind" != "$kind" ]; then
+              output+="  - ℹ️  Based on commit messages, consider a **$suggested_kind** bump to **$suggested_ver**\n"
+            fi
+          else
+            # If version wasn't updated, suggest the appropriate bump
+            output+="- ⚠️  Version not updated. Suggested $bump_level bump to **$suggested_ver**\n"
+            output+="  - Current version: $base_ver\n"
+          fi
+          
+          # Show commit summary
+          output+="\n## 📝 Commit Summary\n"
+          output+="```\n"
+          output+="$(git log --oneline --no-merges main..HEAD | head -10)"
+          if [ $(git log --oneline --no-merges main..HEAD | wc -l) -gt 10 ]; then
+            output+="\n... and $(($(git rev-list --count main..HEAD) - 10)) more commits"
+          fi
+          output+="\n```\n"
+          
+          echo "versions<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$output" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Generate short changelog
+        id: short
+        run: |
+          git-cliff --output short_changelog.md main..HEAD
+          echo "short_changelog<<EOF" >> $GITHUB_OUTPUT
+          cat short_changelog.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Generate full changelog
+        uses: orhun/git-cliff-action@v4
+        id: generate
+        with:
+          config: cliff.toml
+          args: --output CHANGELOG.md
+        env:
+          GITHUB_OUTPUT: CHANGELOG.md
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Save full changelog content
+        id: save_changelog
+        run: |
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          cat CHANGELOG.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Update PR with changelog
+        uses: mshick/add-pr-comment@v2
+        with:
+          message: |
+            ## 📝 PR Changes
+            ${{ steps.short.outputs.short_changelog }}
+
+            ${{ steps.versions.outputs.versions }}
+
+            <details>
+            <summary>📜 Full Changelog</summary>
+
+            ${{ steps.generate.outputs.changelog }}
+            </details>
+
+  generate-docs:
+    name: Cargo
+    runs-on: ubuntu-latest
+    outputs:
+      docs-path: ${{ steps.generate.outputs.docs-path }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rust-docs
+
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: docs
+
+      - name: Generate docs
+        id: generate
+        run: |
+          cargo doc --no-deps --profile ci --document-private-items --all-features
+          mkdir -p target/doc/docs
+          cp README.md target/doc/docs/
+          cp -r docs/* target/doc/docs/ 2>/dev/null || true
+
+          cat > target/doc/index.html <<EOF
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <meta http-equiv="refresh" content="0;url=buoy_sim/index.html">
+              <title>Buoy Documentation</title>
+          </head>
+          <body>
+              <p>Redirecting to <a href="buoy_sim/index.html">main documentation</a>...</p>
+          </body>
+          </html>
+          EOF
+
+          echo "docs-path=target/doc" >> $GITHUB_OUTPUT
+
+  deploy-docs:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: generate-docs
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        with:
+          static_site_generator: generic
+
+      - name: Upload docs
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ needs.generate-docs.outputs.docs-path }}
+
+      - name: Deploy
+        uses: actions/deploy-pages@v4
