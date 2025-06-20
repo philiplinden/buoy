@@ -9,6 +9,7 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/philiplinden/buoy"
 keywords = ["physics", "simulation", "bevy"]
 categories = ["simulation"]
+resolver = "2"
 
 [dependencies]
 bevy = { version = "0.16.1", default-features = false, features = [
@@ -35,12 +36,13 @@ render = [
     "bevy/bevy_window",
     "bevy/bevy_text",
     "bevy/default_font",
+    "bevy/bevy_pbr",
+    "bevy/tonemapping_luts",
     "bevy/bevy_window",
     "bevy/bevy_winit",
     "bevy/x11",
     "bevy/wayland",
 ]
-headless = []
 debug = ["bevy/bevy_dev_tools", "bevy/dynamic_linking", "bevy/track_location"]
 ci = ["headless", "bevy/bevy_ci_testing"]
 

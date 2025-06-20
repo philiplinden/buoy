@@ -13,8 +13,8 @@ use uom::si::{
     pressure::kilopascal,
 };
 
-use crate::{
-    core::SimState,
+use crate::SimState;
+use super::{
     ideal_gas::{ideal_gas_density, GasSpecies},
     constants::{STANDARD_TEMPERATURE, STANDARD_PRESSURE},
 };

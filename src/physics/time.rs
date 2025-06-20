@@ -1,7 +1,7 @@
 use avian3d::prelude::*;
 use bevy::prelude::*;
 
-use crate::core::SimState;
+use crate::SimState;
 
 pub(crate) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(SimState::Stopped), pause);

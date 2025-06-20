@@ -6,11 +6,8 @@ use uom::si::{
     mass_density::kilogram_per_cubic_meter, ratio::ratio, volume::cubic_meter,
 };
 
-use crate::{
-    atmosphere::Atmosphere,
-    constants::{EARTH_RADIUS_M, STANDARD_GRAVITY},
-    core::SimState,
-};
+use crate::SimState;
+use super::constants::{EARTH_RADIUS_M, STANDARD_GRAVITY};
 
 pub(crate) fn plugin(app: &mut App) {
     app.insert_resource(Gravity(

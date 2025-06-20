@@ -4,5 +4,6 @@ pub fn plugin(app: &mut App) {
     app.insert_resource(AmbientLight {
         color: Color::WHITE,
         brightness: 200.0,
+        affects_lightmapped_meshes: true,
     });
 }
