@@ -19,12 +19,12 @@ license-file = "LICENSE-APACHE"
 
 [workspace.dependencies]
 # Shared dependencies with fixed versions
-bevy = { version = "0.15.2", default-features = false, features = [
+bevy = { version = "0.16.1", default-features = false, features = [
     "bevy_state",
-    "bevy_render", # needed for working with meshes, even without rendering
+    "bevy_render",      # needed for working with meshes, even without rendering
     "multi_threaded",
 ] }
-avian3d = "0.2.1"
+avian3d = "0.3.1"
 big_space = "0.9.1"
 
 # Compile with Performance Optimizations:
