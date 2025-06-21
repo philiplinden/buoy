@@ -6,26 +6,27 @@
 
 use bevy::prelude::*;
 
-use buoy_core::{
+#[cfg(feature = "grid_space")]
+use buoy_physics::{
     fluid_volume::FluidVolumeBuilder,
-    grid::RootGrid,
+    grid::{Precision, RootGrid},
 };
 
 pub(crate) fn plugin(app: &mut App) {
-    app.add_systems(PostStartup, (setup_scene, spawn_fluid_volume));
+    app.add_systems(PostStartup, setup_scene);
+
+    #[cfg(feature = "grid_space")]
+    app.add_systems(PostStartup, spawn_fluid_volume);
 }
 
 #[derive(Component)]
 struct DebugObject;
 
 fn setup_scene(mut commands: Commands) {
-    commands.spawn((
-        DebugObject,
-        Transform::default(),
-        Name::new("Debug Object"),
-    ));
+    commands.spawn((DebugObject, Transform::default(), Name::new("Debug Object")));
 }
 
+#[cfg(feature = "grid_space")]
 fn spawn_fluid_volume(mut commands: Commands, root_grid: Query<Entity, With<RootGrid>>) {
     let builder = FluidVolumeBuilder::new();
     builder.spawn(&mut commands, root_grid.single());

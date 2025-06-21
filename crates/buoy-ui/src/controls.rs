@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use buoy_core::prelude::SimState;
+use buoy_common::SimState;
 
 pub fn plugin(app: &mut App) {
     app.init_resource::<KeyBindingsConfig>();
