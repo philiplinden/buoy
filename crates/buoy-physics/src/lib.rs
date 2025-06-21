@@ -3,23 +3,20 @@ pub mod atmosphere;
 pub mod constants;
 pub mod core;
 pub mod forces;
-pub mod format;
 pub mod geometry;
-pub mod grid;
 pub mod ideal_gas;
 pub mod time;
-pub mod fluid_volume;
 
-pub use uom as units;
+#[cfg(feature = "grid_space")]
+pub mod fluid_volume;
+#[cfg(feature = "grid_space")]
+pub mod grid;
 
 pub mod prelude {
     pub use crate::{
         atmosphere::Atmosphere,
-        core::{BuoyPlugin, SimState},
         forces::{drag, scale_gravity},
-        grid::{Precision, RootGrid, GRID_CELL_EDGE_LENGTH_METERS},
         ideal_gas::{GasSpecies, IdealGas},
-        fluid_volume::{FluidVolume, FluidVolumeCell, FluidVolumeGrid},
     };
     pub use uom::si::{
         f32::{Mass, MassDensity, MolarMass, Pressure, ThermodynamicTemperature, Volume},
@@ -32,6 +29,7 @@ pub mod prelude {
     };
 }
 
-pub use core::BuoyPlugin;
-
+#[cfg(feature = "grid_space")]
 pub use fluid_volume::{FluidVolumeBuilder, FluidVolumeCell, DefaultFluidVolumeSettings};
+
+pub use core::BuoyPhysicsPlugin;

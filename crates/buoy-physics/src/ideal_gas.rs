@@ -7,7 +7,7 @@ use avian3d::math::Scalar;
 use bevy::prelude::*;
 use uom::si::{
     f32::{
-        ThermodynamicTemperature, Pressure, Mass, Volume, 
+        ThermodynamicTemperature, Pressure, Mass, Volume,
         MassDensity, MolarMass
     },
     thermodynamic_temperature::kelvin,
@@ -18,9 +18,9 @@ use uom::si::{
     molar_mass::kilogram_per_mole,
 };
 
+use buoy_common::SimState;
 use crate::{
     constants::{GAS_CONSTANT, STANDARD_GRAVITY},
-    core::SimState,
     geometry::sphere_volume,
 };
 
