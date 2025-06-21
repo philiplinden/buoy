@@ -9,6 +9,10 @@ Notable changes to this project will be documented in this file.
 - Update readme ([`5685be7`](https://github.com/philiplinden/buoy/commit/5685be7df46da343be3b831e7e5c15e024227a1c))
 - More resources ([`696266b`](https://github.com/philiplinden/buoy/commit/696266b175e90f3e36d5de8494ef2f7977d41b43))
 
+### ♻️ Refactor
+
+- Disallow dead code in most places, add placeholders for payload ([`edb98d3`](https://github.com/philiplinden/buoy/commit/edb98d3a6aff3c3633de027930e3406e3fdd3bb0))
+
 ### 🎨 UI & Styling
 
 - Improved plots ([`6d1bba1`](https://github.com/philiplinden/buoy/commit/6d1bba1862d9be682693fe6932148195a8db3ea7))
