@@ -1,7 +1,8 @@
-mod controls;
 mod camera;
+mod controls;
 mod lighting;
 mod scene;
+mod shell;
 
 #[cfg(feature = "dev")]
 mod debug;
@@ -19,11 +20,13 @@ impl Plugin for BuoyUiPlugin {
             scene::plugin,
         ));
 
-    #[cfg(feature = "dev")]
-    app.add_plugins(debug::plugin);
+        #[cfg(feature = "dev")]
+        app.add_plugins(debug::plugin);
 
-    #[cfg(feature = "inspect")]
-    app.add_plugins(WorldInspectorPlugin::new());
+        #[cfg(feature = "egui")]
+        app.add_plugins(shell::plugin);
 
+        #[cfg(feature = "inspect")]
+        app.add_plugins(bevy_inspector_egui::quick::WorldInspectorPlugin::new());
     }
 }
