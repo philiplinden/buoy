@@ -121,7 +121,7 @@ commit_parsers = [
     { message = "^feat:", group = "<!-- 1 -->🚀 Features" },
     { message = "^doc:", group = "<!-- 2 -->📚 Documentation" },
     { message = "^perf:", group = "<!-- 3 -->⚡ Performance" },
-    { message = "^refactor:", group = "<!-- 4 -->🚜 Refactor" },
+    { message = "^refactor:|^cleanup:", group = "<!-- 4 -->♻️ Refactor" },
     { message = "^style:|^ui:", group = "<!-- 5 -->🎨 UI & Styling" },
     { message = "^fix:", group = "<!-- 6 -->🐛 Bug Fixes" },
     { message = "^dev:", group = "<!-- 7 -->🧪 Experimental" },
