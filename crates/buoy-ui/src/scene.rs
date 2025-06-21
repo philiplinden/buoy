@@ -22,8 +22,23 @@ pub(crate) fn plugin(app: &mut App) {
 #[derive(Component)]
 struct DebugObject;
 
-fn setup_scene(mut commands: Commands) {
-    commands.spawn((DebugObject, Transform::default(), Name::new("Debug Object")));
+fn setup_scene(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+) {
+    commands.spawn((
+        Mesh3d(meshes.add(Plane3d::default().mesh().size(5.0, 5.0))),
+        MeshMaterial3d(materials.add(Color::srgb(0.3, 0.5, 0.3))),
+    ));
+    commands.spawn((
+        PointLight {
+            intensity: 1500.0,
+            shadows_enabled: true,
+            ..Default::default()
+        },
+        Transform::from_xyz(4.0, 8.0, 4.0),
+    ));
 }
 
 #[cfg(feature = "grid_space")]
