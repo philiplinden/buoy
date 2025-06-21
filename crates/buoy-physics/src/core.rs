@@ -1,6 +1,5 @@
 use std::fmt::Display;
 
-use super::*;
 use avian3d::prelude::{PhysicsInterpolationPlugin, PhysicsPlugins, PhysicsSet};
 use bevy::{
     app::{PluginGroup, PluginGroupBuilder},
@@ -14,14 +13,14 @@ impl Plugin for BuoyPhysicsPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
             PhysicsPlugins::default().set(PhysicsInterpolationPlugin::interpolate_all()),
-            ideal_gas::plugin,
-            atmosphere::plugin,
-            forces::plugin,
-            time::plugin,
+            super::ideal_gas::plugin,
+            super::atmosphere::plugin,
+            super::forces::plugin,
+            super::time::plugin,
             #[cfg(feature = "grid_space")]
-            fluid_volume::plugin,
+            super::fluid_volume::plugin,
             #[cfg(feature = "grid_space")]
-            grid::plugin,
+            super::grid::plugin,
         ));
     }
 }
