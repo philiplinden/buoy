@@ -25,7 +25,7 @@ jobs:
         id: short_changelog
         with:
           config: cliff.toml
-          args: -vv --latest --no-exec --unreleased --github-repo ${{ github.repository }}
+          args: --latest --no-exec --bump --unreleased --github-repo ${{ github.repository }}
         env:
           OUTPUT: short_changelog.md
 
@@ -34,19 +34,19 @@ jobs:
         id: full_changelog
         with:
           config: cliff.toml
-          args: -vv --latest --no-exec --github-repo ${{ github.repository }}
+          args: --latest --no-exec --bump --github-repo ${{ github.repository }}
         env:
           OUTPUT: CHANGELOG.md
 
       - name: Commit updated full changelog
+        if: ${{ github.event_name == 'pull_request' }}
         run: |
-          git checkout ${{ github.ref }}
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           set +e
           git add CHANGELOG.md
           git commit -m "Update changelog"
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git ${{ github.ref }}
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git ${{ github.event.pull_request.head.ref }}
 
       - name: Update PR with changelog
         uses: mshick/add-pr-comment@v2
