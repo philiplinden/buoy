@@ -3,9 +3,6 @@
 
 use bevy::prelude::*;
 
-#[cfg(feature = "inspect")]
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
-
 fn main() {
     let mut app = App::new();
 
@@ -24,5 +21,11 @@ fn main() {
         buoy_physics::BuoyPhysicsPlugin,
         buoy_ui::BuoyUiPlugin,
     ));
+
+    #[cfg(feature = "egui")]
+    app.add_plugins(bevy_egui::EguiPlugin {
+        enable_multipass_for_primary_context: true,
+    });
+
     app.run();
 }

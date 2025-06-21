@@ -7,6 +7,8 @@ mod grid_space {
     use buoy_physics::grid::Precision;
 }
 
+const CAMERA_TARGET: Vec3 = Vec3::ZERO;
+
 pub fn plugin(app: &mut App) {
     #[cfg(feature = "grid_space")]
     {
@@ -16,9 +18,13 @@ pub fn plugin(app: &mut App) {
     }
     #[cfg(not(feature = "grid_space"))]
     {
-        app.add_systems(Startup, setup_normal_camera);
+        app.init_resource::<OriginalCameraTransform>()
+            .add_systems(Startup, setup_normal_camera);
     }
 }
+
+#[derive(Resource, Deref, DerefMut, Default)]
+pub struct OriginalCameraTransform(Transform);
 
 /// Spawns the camera in the root grid and attaches the FloatingOrigin to it.
 ///
@@ -59,8 +65,10 @@ fn setup_floating_camera(
 
 #[cfg(not(feature = "grid_space"))]
 fn setup_normal_camera(mut commands: Commands) {
-    commands.spawn((
-        Camera3d::default(),
-        Transform::from_xyz(15.0, 5.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
-    ));
+    let camera_pos = Vec3::new(-2.0, 2.5, 5.0);
+    let camera_transform =
+        Transform::from_translation(camera_pos).looking_at(CAMERA_TARGET, Vec3::Y);
+    commands.insert_resource(OriginalCameraTransform(camera_transform));
+
+    commands.spawn((Camera3d::default(), camera_transform));
 }
