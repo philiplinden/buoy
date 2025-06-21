@@ -2,6 +2,13 @@
 
 Notable changes to this project will be documented in this file.
 
+## [unreleased]
+
+### ♻️ Refactor
+
+- Buoy-core -> buoy-physics, add buoy-common, grid space is optional (#34) ([`a8e770e`](https://github.com/philiplinden/buoy/commit/a8e770e58c88a950f74c46a53fc069474c044607))
+- Remove python experiments (#33) ([`089042b`](https://github.com/philiplinden/buoy/commit/089042b574e39ba263ec528affa14a5448073341))
+
 ## [0.1.0] - 2025-03-02
 
 ### 📚 Documentation

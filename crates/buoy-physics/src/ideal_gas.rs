@@ -24,7 +24,7 @@ use crate::{
     geometry::sphere_volume,
 };
 
-pub(crate) fn plugin(app: &mut App) {
+pub(crate) fn plugin(_app: &mut App) {
     // nothing yet
 }
 

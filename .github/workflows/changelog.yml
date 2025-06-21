@@ -27,7 +27,7 @@ jobs:
         id: short_changelog
         with:
           config: cliff.toml
-          args: --latest --no-exec --bump --unreleased --github-repo ${{ github.repository }}
+          args: --latest --no-exec --bumped-version --unreleased --github-repo ${{ github.repository }}
         env:
           OUTPUT: short_changelog.md
 
@@ -36,7 +36,7 @@ jobs:
         id: full_changelog
         with:
           config: cliff.toml
-          args: --latest --no-exec --bump --github-repo ${{ github.repository }}
+          args: --latest --no-exec --bumped-version --github-repo ${{ github.repository }}
         env:
           OUTPUT: CHANGELOG.md
 
