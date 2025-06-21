@@ -48,14 +48,30 @@ jobs:
           add: "CHANGELOG.md"
           push: true
 
+      - name: Read changelog files
+        id: read_files
+        run: |
+          # Read the files directly without JSON escaping
+          SHORT_CHANGELOG=$(cat short_changelog.md)
+          FULL_CHANGELOG=$(cat CHANGELOG.md)
+          # Use multi-line delimiters to preserve formatting
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64 | tr -d '+=/')
+          echo "short_changelog_content<<$EOF" >> $GITHUB_OUTPUT
+          echo "$SHORT_CHANGELOG" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+
+          echo "full_changelog_content<<$EOF" >> $GITHUB_OUTPUT
+          echo "$FULL_CHANGELOG" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+
       - name: Update PR with changelog
         uses: mshick/add-pr-comment@v2
         with:
           message: |
-            ${{ steps.short_changelog.outputs.changelog }}
+            ${{ steps.read_files.outputs.short_changelog_content }}
 
             <details>
             <summary>📜 Full Changelog</summary>
 
-            ${{ steps.full_changelog.outputs.changelog }}
+            ${{ steps.read_files.outputs.full_changelog_content }}
             </details>
