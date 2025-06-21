@@ -1,0 +1,23 @@
+[package]
+name = "buoy-common"
+version = "0.1.0"
+description = "Common code for other buoy crates"
+edition = { workspace = true }
+authors = { workspace = true }
+license = { workspace = true }
+
+[dependencies]
+bevy = { workspace = true }
+uom = { workspace = true }
+
+[features]
+default = [
+    "dev",
+]
+dev = [
+    "bevy/dynamic_linking",
+    "bevy/bevy_debug_stepping",
+]
+grid_space = []
+
+# [package.metadata.mutually_exclusive_features]
