@@ -1,14 +1,23 @@
-use bevy::{
-    math::DVec3,
-    prelude::*,
-};
-use big_space::prelude::*;
-use buoy_core::prelude::{Precision, RootGrid};
+use bevy::prelude::*;
+
+#[cfg(feature = "grid_space")]
+mod grid_space {
+    use bevy::math::DVec3;
+    use big_space::prelude::*;
+    use buoy_physics::grid::Precision;
+}
 
 pub fn plugin(app: &mut App) {
-    app.add_plugins((big_space::camera::CameraControllerPlugin::<Precision>::default(),));
-    app.add_systems(PostStartup, setup_camera);
-    app.add_systems(PostUpdate, big_space::camera::default_camera_inputs);
+    #[cfg(feature = "grid_space")]
+    {
+        app.add_plugins((big_space::camera::CameraControllerPlugin::<Precision>::default(),));
+        app.add_systems(PostStartup, setup_floating_camera);
+        app.add_systems(PostUpdate, big_space::camera::default_camera_inputs);
+    }
+    #[cfg(not(feature = "grid_space"))]
+    {
+        app.add_systems(Startup, setup_normal_camera);
+    }
 }
 
 /// Spawns the camera in the root grid and attaches the FloatingOrigin to it.
@@ -17,7 +26,8 @@ pub fn plugin(app: &mut App) {
 /// the camera. There should only be one FloatingOrigin. Any spatial entity can
 /// be the floating origin. Attaching it to the camera ensures the camera will
 /// never see floating point precision rendering artifacts.
-fn setup_camera(
+#[cfg(feature = "grid_space")]
+fn setup_floating_camera(
     mut commands: Commands,
     mut previous_origin: Query<Entity, With<FloatingOrigin>>,
     // HACK: This is a hack to access the root grid and add to it. It is not
@@ -45,4 +55,12 @@ fn setup_camera(
                 .with_speed(1.0),
         ))
         .set_parent(root_grid_id);
+}
+
+#[cfg(not(feature = "grid_space"))]
+fn setup_normal_camera(mut commands: Commands) {
+    commands.spawn((
+        Camera3d::default(),
+        Transform::from_xyz(15.0, 5.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
+    ));
 }

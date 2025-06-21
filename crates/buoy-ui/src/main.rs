@@ -3,8 +3,26 @@
 
 use bevy::prelude::*;
 
+#[cfg(feature = "inspect")]
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
+
 fn main() {
-    App::new()
-        .add_plugins(buoy_ui::AppPlugins)
-        .run();
+    let mut app = App::new();
+
+    app.add_plugins((
+        buoy_common::BuoyDefaultPlugins.set(WindowPlugin {
+            primary_window: Window {
+                title: "buoy 🛟".to_string(),
+                canvas: Some("#bevy".to_string()),
+                fit_canvas_to_parent: true,
+                prevent_default_event_handling: true,
+                ..default()
+            }
+            .into(),
+            ..default()
+        }),
+        buoy_physics::BuoyPhysicsPlugin,
+        buoy_ui::BuoyUiPlugin,
+    ));
+    app.run();
 }

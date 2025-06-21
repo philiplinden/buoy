@@ -1,10 +1,6 @@
 use std::fmt::Display;
 use bevy::prelude::*;
-use uom::si::{f32::*, Quantity};
-
-pub(crate) fn plugin(app: &mut App) {
-    app.register_type::<UomQuantity>();
-}
+use uom::si::Quantity;
 
 #[derive(Component, Debug, Reflect)]
 pub struct UomQuantity {

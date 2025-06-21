@@ -13,8 +13,8 @@ use uom::si::{
     pressure::kilopascal,
 };
 
+use buoy_common::SimState;
 use crate::{
-    core::SimState,
     ideal_gas::{ideal_gas_density, GasSpecies},
     constants::{STANDARD_TEMPERATURE, STANDARD_PRESSURE},
 };

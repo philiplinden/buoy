@@ -39,12 +39,7 @@ pub const GRID_SWITCHING_THRESHOLD_METERS: f32 = 0.5;
 
 /// The precision type for grid coordinates. This determines the maximum size of the
 /// simulation space. Higher precision types allow larger worlds but use more memory.
-#[cfg(all(feature = "i32", not(any(feature = "i64", feature = "i128"))))]
 pub type Precision = i32;
-#[cfg(all(feature = "i64", not(any(feature = "i32", feature = "i128"))))]
-pub type Precision = i64;
-#[cfg(all(feature = "i128", not(any(feature = "i32", feature = "i64"))))]
-pub type Precision = i128;
 
 // Plugin setup
 pub(crate) fn plugin(app: &mut App) {
