@@ -1,17 +1,13 @@
 use bevy::{app::PluginGroupBuilder, prelude::*};
 
+/// A custom flavor of Bevy's DefaultPlugins that includes common plugins used by Buoy.
 pub struct BuoyDefaultPlugins;
 
 impl PluginGroup for BuoyDefaultPlugins {
     fn build(self) -> PluginGroupBuilder {
-        // initialize the default plugins before modifying them
-        let mut group = PluginGroupBuilder::start::<DefaultPlugins>();
+        let mut group = PluginGroupBuilder::start::<Self>().add_group(DefaultPlugins);
 
-        // add our own plugins
-        group = group
-            .add(CommonStatesPlugin)
-            .add(CommonTypesPlugin);
-
+        group = group.add(CommonStatesPlugin).add(CommonTypesPlugin);
         // disable TransformPlugin if grid_space feature is enabled
         #[cfg(feature = "grid_space")]
         {
@@ -22,6 +18,7 @@ impl PluginGroup for BuoyDefaultPlugins {
     }
 }
 
+/// A plugin that registers common states used by Buoy.
 pub struct CommonStatesPlugin;
 
 impl Plugin for CommonStatesPlugin {
@@ -30,6 +27,7 @@ impl Plugin for CommonStatesPlugin {
     }
 }
 
+/// A plugin that registers common types used by Buoy.
 pub struct CommonTypesPlugin;
 
 impl Plugin for CommonTypesPlugin {

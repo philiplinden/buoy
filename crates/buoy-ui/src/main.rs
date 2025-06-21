@@ -10,8 +10,7 @@ fn main() {
     let mut app = App::new();
 
     app.add_plugins((
-        buoy_common::BuoyDefaultPlugins
-        .set(WindowPlugin {
+        buoy_common::BuoyDefaultPlugins.set(WindowPlugin {
             primary_window: Window {
                 title: "buoy 🛟".to_string(),
                 canvas: Some("#bevy".to_string()),
