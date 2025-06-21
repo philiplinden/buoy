@@ -15,6 +15,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
           # Setting the fetch depth to zero is important!
           # Otherwise, you might end up getting empty changelogs or git ref
           # errors depending on arguments passed to git-cliff.
@@ -39,14 +41,12 @@ jobs:
           OUTPUT: CHANGELOG.md
 
       - name: Commit updated full changelog
+        uses: EndBug/add-and-commit@v9
         if: ${{ github.event_name == 'pull_request' }}
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          set +e
-          git add CHANGELOG.md
-          git commit -m "Update changelog"
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git ${{ github.event.pull_request.head.ref }}
+        with:
+          message: "Update changelog"
+          add: "CHANGELOG.md"
+          push: true
 
       - name: Update PR with changelog
         uses: mshick/add-pr-comment@v2
