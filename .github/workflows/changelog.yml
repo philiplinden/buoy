@@ -6,6 +6,11 @@ on:
       - "main"
     paths-ignore: # don't trigger on changes to these files
       - "CHANGELOG.md"
+  push:
+    branches:
+      - "main"
+    paths-ignore: # don't trigger on changes to these files
+      - "CHANGELOG.md"
 
 jobs:
   update-changelog:
@@ -42,7 +47,6 @@ jobs:
 
       - name: Commit updated full changelog
         uses: EndBug/add-and-commit@v9
-        if: ${{ github.event_name == 'pull_request' }}
         with:
           message: "Update changelog"
           add: "CHANGELOG.md"
@@ -66,6 +70,7 @@ jobs:
 
       - name: Update PR with changelog
         uses: mshick/add-pr-comment@v2
+        if: ${{ github.event_name == 'pull_request' }}
         with:
           message: |
             ${{ steps.read_files.outputs.short_changelog_content }}
