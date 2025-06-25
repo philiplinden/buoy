@@ -28,7 +28,7 @@ impl BalloonBuilder {
     }
 
     pub fn spawn(self, commands: &mut Commands) {
-        debug!("Spawning balloon at {:?}", self.position);
+        info!("Spawning balloon at {:?}", self.position);
         commands.spawn((
             Balloon::default(),
             Transform::from_translation(self.position),

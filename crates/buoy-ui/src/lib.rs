@@ -2,6 +2,7 @@ mod camera;
 mod controls;
 mod lighting;
 mod shell;
+mod colors;
 
 #[cfg(feature = "dev")]
 mod debug;

@@ -8,6 +8,7 @@ license = { workspace = true }
 
 [dependencies]
 bevy = { workspace = true }
+bevy_render = { workspace = true }
 uom = { workspace = true }
 
 [features]
@@ -16,7 +17,10 @@ default = [
 ]
 dev = [
     "bevy/dynamic_linking",
-    "bevy/bevy_debug_stepping",
+]
+window = [
+    "bevy/bevy_window",
+    "bevy/bevy_winit",
 ]
 grid_space = []
 
