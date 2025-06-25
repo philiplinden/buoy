@@ -6,6 +6,7 @@ pub mod geometry;
 pub mod ideal_gas;
 pub mod time;
 pub mod mesh_utils;
+pub mod objects;
 
 #[cfg(feature = "grid_space")]
 pub mod fluid_volume;

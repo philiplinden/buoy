@@ -174,10 +174,13 @@ pub fn create_cube_mesh() -> Mesh {
 /// A new `Mesh` representing the icosphere
 #[rustfmt::skip]
 pub fn create_icosphere_mesh(radius: f32, subdivisions: usize) -> Mesh {
+    info!("Creating icosphere mesh with radius {} and {} subdivisions", radius.clone(), subdivisions.clone());
     // Start with an icosahedron (20-sided polyhedron)
+    info!("Generating icosahedron");
     let (mut positions, mut indices) = generate_icosahedron(radius);
 
     // Subdivide the mesh if requested
+    info!("Subdividing mesh");
     if subdivisions > 0 {
         (positions, indices) = subdivide_mesh(positions, indices, subdivisions);
 
@@ -190,6 +193,7 @@ pub fn create_icosphere_mesh(radius: f32, subdivisions: usize) -> Mesh {
     }
 
     // Calculate UV coordinates (spherical mapping)
+    info!("Calculating UV coordinates");
     let uvs: Vec<[f32; 2]> = positions.iter()
         .map(|&p| {
             let normalized = Vec3::from(p).normalize();
@@ -201,6 +205,7 @@ pub fn create_icosphere_mesh(radius: f32, subdivisions: usize) -> Mesh {
         .collect();
 
     // Calculate normals (all pointing out from the center)
+    info!("Calculating normals");
     let normals: Vec<[f32; 3]> = positions.iter()
         .map(|&p| (Vec3::from(p).normalize()).into())
         .collect();
@@ -210,14 +215,14 @@ pub fn create_icosphere_mesh(radius: f32, subdivisions: usize) -> Mesh {
         PrimitiveTopology::TriangleList,
         RenderAssetUsages::MAIN_WORLD | RenderAssetUsages::RENDER_WORLD
     );
-
+    info!("Inserting attributes");
     mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
     mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, uvs);
     mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
     mesh.insert_indices(Indices::U32(
         indices.into_iter().map(|i| i as u32).collect()
     ));
-
+    info!("Created icosphere mesh");
     mesh
 }
 
