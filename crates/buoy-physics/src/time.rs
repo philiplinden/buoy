@@ -1,7 +1,7 @@
 use avian3d::prelude::*;
 use bevy::prelude::*;
 
-use buoy_common::SimState;
+use buoy_common::prelude::*;
 
 pub(crate) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(SimState::Stopped), pause);

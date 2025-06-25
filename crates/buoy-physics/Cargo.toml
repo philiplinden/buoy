@@ -20,12 +20,10 @@ default = [
 dev = [
     "bevy/dynamic_linking",
     "bevy/bevy_debug_stepping",
-    "avian3d/debug-plugin",
 ]
 grid_space = [
     "buoy-common/grid_space",
     "big_space",
-    "big_space/debug",
 ]
 
 

@@ -1,8 +1,17 @@
 [workspace]
 resolver = "2" # Important for Bevy
-members = ["crates/buoy-common", "crates/buoy-physics", "crates/buoy-ui"]
+members = [
+    "crates/buoy-common",
+    "crates/buoy-physics",
+    "crates/buoy-ui",
+    "crates/buoy-runtime",
+]
 
-default-members = ["crates/buoy-ui"]
+default-members = [
+    "crates/buoy-common",
+    "crates/buoy-physics",
+    "crates/buoy-runtime",
+]
 
 [workspace.package]
 version = "0.1.0"
@@ -15,7 +24,7 @@ license-file = "LICENSE-APACHE"
 [workspace.dependencies]
 bevy = { version = "0.16.1", default-features = false, features = [
     "bevy_state",
-    "bevy_render",    # needed for working with meshes, even without rendering
+    # "bevy_render",    # needed for working with meshes, even without a camera
     "multi_threaded",
     "bevy_log",
     "trace",

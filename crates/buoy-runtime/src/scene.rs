@@ -5,6 +5,7 @@
 //! config file or spawned at runtime.
 
 use bevy::prelude::*;
+use buoy_common::objects::balloon::spawn_balloon;
 
 #[cfg(feature = "grid_space")]
 use buoy_physics::{
@@ -12,18 +13,19 @@ use buoy_physics::{
     grid::{Precision, RootGrid},
 };
 
-pub(crate) fn plugin(app: &mut App) {
-    app.add_systems(PostStartup, setup_scene);
+pub struct SimpleScenePlugin;
 
-    #[cfg(feature = "grid_space")]
-    app.add_systems(PostStartup, spawn_fluid_volume);
+impl Plugin for SimpleScenePlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(PostStartup, setup_scene);
+
+        #[cfg(feature = "grid_space")]
+        app.add_systems(PostStartup, spawn_fluid_volume);
+    }
 }
 
-#[derive(Component)]
-struct DebugObject;
-
 fn setup_scene(mut commands: Commands) {
-    commands.spawn((DebugObject, Transform::default(), Name::new("Debug Object")));
+    spawn_balloon(&mut commands);
 }
 
 #[cfg(feature = "grid_space")]
