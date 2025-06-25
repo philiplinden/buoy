@@ -6,7 +6,7 @@ use uom::si::{
     mass_density::kilogram_per_cubic_meter, ratio::ratio, volume::cubic_meter,
 };
 
-use buoy_common::SimState;
+use buoy_common::prelude::*;
 use crate::{
     atmosphere::Atmosphere,
     constants::{EARTH_RADIUS_M, STANDARD_GRAVITY},

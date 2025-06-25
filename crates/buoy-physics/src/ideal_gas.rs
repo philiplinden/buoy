@@ -18,7 +18,7 @@ use uom::si::{
     molar_mass::kilogram_per_mole,
 };
 
-use buoy_common::SimState;
+use buoy_common::prelude::*;
 use crate::{
     constants::{GAS_CONSTANT, STANDARD_GRAVITY},
     geometry::sphere_volume,
