@@ -409,7 +409,7 @@ pub fn calculate_strain_system(
         &mut Strain,
     )>,
     meshes: Res<Assets<Mesh>>,
-    asset_server: Res<AssetServer>,
+    _asset_server: Res<AssetServer>,
 ) {
     for (mesh_handle, rest_state, mut strain) in query.iter_mut() {
         // Get the current mesh data
