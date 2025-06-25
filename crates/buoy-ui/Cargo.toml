@@ -7,11 +7,11 @@ authors = { workspace = true }
 license = { workspace = true }
 
 [dependencies]
-buoy-common = { path = "../buoy-common", features = [ "window" ] }
+buoy-common = { path = "../buoy-common", features = ["window"] }
 buoy-physics = { path = "../buoy-physics" }
 bevy = { workspace = true, features = [
     "bevy_asset",
-    "bevy_render", # this includes bevy_mesh
+    "bevy_render",               # this includes bevy_mesh
     "bevy_core_pipeline",
     "bevy_pbr",
     "bevy_text",
@@ -24,8 +24,8 @@ bevy = { workspace = true, features = [
     "tonemapping_luts",
     "x11",
 ] }
-avian3d = { workspace = true, optional = true, features = [ "bevy_picking" ] }
-big_space = { workspace = true, optional = true, features = [ "camera" ] }
+avian3d = { workspace = true, optional = true, features = ["bevy_picking"] }
+big_space = { workspace = true, optional = true, features = ["camera"] }
 bevy_egui = { version = "0.34.1" }
 
 [features]
