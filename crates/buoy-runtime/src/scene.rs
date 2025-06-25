@@ -22,7 +22,6 @@ fn setup_scene(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
-    mut asset_server: Res<AssetServer>,
 ) {
     // FIXME: for some reason many subdivisions end up being super slow
     let balloon_mesh = create_icosphere_mesh(1.0, 0);
@@ -55,7 +54,6 @@ fn setup_scene(
 fn setup_scene(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut asset_server: Res<AssetServer>,
 ) {
     // FIXME: for some reason many subdivisions end up being super slow
     let balloon_mesh = create_icosphere_mesh(1.0, 0);
