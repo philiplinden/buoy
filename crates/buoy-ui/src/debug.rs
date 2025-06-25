@@ -11,7 +11,7 @@ use {
     buoy_physics::grid::Precision,
 };
 
-use buoy_common::ColorPalette;
+use crate::colors::ColorPalette;
 
 
 pub(crate) fn plugin(app: &mut App) {

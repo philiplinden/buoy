@@ -1,8 +1,17 @@
 [workspace]
 resolver = "2" # Important for Bevy
-members = ["crates/buoy-common", "crates/buoy-physics", "crates/buoy-ui"]
+members = [
+    "crates/buoy-common",
+    "crates/buoy-physics",
+    "crates/buoy-ui",
+    "crates/buoy-runtime",
+]
 
-default-members = ["crates/buoy-ui"]
+default-members = [
+    "crates/buoy-common",
+    "crates/buoy-physics",
+    "crates/buoy-runtime",
+]
 
 [workspace.package]
 version = "0.1.0"
@@ -15,12 +24,19 @@ license-file = "LICENSE-APACHE"
 [workspace.dependencies]
 bevy = { version = "0.16.1", default-features = false, features = [
     "bevy_state",
-    "bevy_render",    # needed for working with meshes, even without rendering
+    "bevy_asset",
     "multi_threaded",
     "bevy_log",
     "trace",
 ] }
-avian3d = { version = "0.3.1", features = ["enhanced-determinism", "parallel"] }
+bevy_render = "0.16.1"
+avian3d = { version = "0.3.1", default-features = false, features = [
+    "f32",
+    "parry-f32",
+    "collider-from-mesh",
+    "enhanced-determinism",
+    "parallel",
+] }
 big_space = { git = "https://github.com/aevyrie/big_space.git", branch = "main" }
 uom = "0.37.0"
 

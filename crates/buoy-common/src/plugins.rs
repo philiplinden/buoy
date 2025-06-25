@@ -8,11 +8,38 @@ impl PluginGroup for BuoyDefaultPlugins {
         let mut group = PluginGroupBuilder::start::<Self>().add_group(DefaultPlugins);
 
         group = group.add(CommonStatesPlugin).add(CommonTypesPlugin);
+
         // disable TransformPlugin if grid_space feature is enabled
         #[cfg(feature = "grid_space")]
         {
             // big_space requires TransformPlugin to be disabled
             group = group.disable::<TransformPlugin>();
+        }
+
+        // configure headless rendering if window feature is disabled
+        #[cfg(not(feature = "window"))]
+        {
+            group = group
+                .disable::<bevy_render::RenderPlugin>()
+                .add(bevy_render::mesh::MeshPlugin)
+                .add(bevy::app::ScheduleRunnerPlugin::run_loop(
+                    std::time::Duration::from_secs_f64(1.0 / 60.0),
+                ));
+        }
+        // configure the window if window feature is enabled
+        #[cfg(feature = "window")]
+        {
+            group = group.set(bevy::window::WindowPlugin {
+                primary_window: bevy::window::Window {
+                    title: "buoy 🛟".to_string(),
+                    canvas: Some("#bevy".to_string()),
+                    fit_canvas_to_parent: true,
+                    prevent_default_event_handling: true,
+                    ..default()
+                }
+                .into(),
+                ..default()
+            });
         }
         group
     }

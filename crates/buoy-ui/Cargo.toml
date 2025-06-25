@@ -5,17 +5,13 @@ description = "UI for the Buoy simulator"
 edition = { workspace = true }
 authors = { workspace = true }
 license = { workspace = true }
-default-run = "buoy-ui"
-
-[[bin]]
-name = "buoy-ui"
-path = "src/main.rs"
 
 [dependencies]
-buoy-common = { path = "../buoy-common" }
+buoy-common = { path = "../buoy-common", features = [ "window" ] }
 buoy-physics = { path = "../buoy-physics" }
 bevy = { workspace = true, features = [
     "bevy_asset",
+    "bevy_render", # this includes bevy_mesh
     "bevy_core_pipeline",
     "bevy_pbr",
     "bevy_text",
@@ -27,14 +23,10 @@ bevy = { workspace = true, features = [
     "default_font",
     "tonemapping_luts",
     "x11",
-    "wayland",
 ] }
-avian3d = { workspace = true }
-big_space = { workspace = true, optional = true,features = [ "camera" ] }
-bevy-inspector-egui = { version = "0.31.0", optional = true, features = [
-    "highlight_changes",
-] }
-bevy_egui = { version = "0.34.1", optional = true }
+avian3d = { workspace = true, optional = true, features = [ "bevy_picking" ] }
+big_space = { workspace = true, optional = true, features = [ "camera" ] }
+bevy_egui = { version = "0.34.1" }
 
 [features]
 default = ["dev", "egui"]
@@ -42,6 +34,7 @@ dev = [
     "buoy-common/dev",
     "buoy-physics/dev",
     "bevy/dynamic_linking",
+    "avian3d/diagnostic_ui",
     "avian3d/debug-plugin",
     "bevy/bevy_dev_tools",
 ]
@@ -52,4 +45,3 @@ grid_space = [
     "big_space",
     "big_space/debug",
 ]
-inspect = [ "bevy-inspector-egui" ]

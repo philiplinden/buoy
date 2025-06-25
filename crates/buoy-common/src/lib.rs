@@ -1,8 +1,11 @@
-mod colors;
-mod plugins;
-mod states;
-mod types;
+pub mod objects;
+pub mod plugins;
+pub mod states;
+pub mod types;
 
-pub use crate::{
-    colors::ColorPalette, plugins::BuoyDefaultPlugins, states::SimState, types::UomQuantity,
-};
+/// Expose the most common structs in the prelude for convenience
+pub mod prelude {
+    pub use crate::{
+        plugins::BuoyDefaultPlugins, states::SimState, types::UomQuantity,
+    };
+}
