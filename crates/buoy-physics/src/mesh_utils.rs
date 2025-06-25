@@ -10,37 +10,11 @@ use bevy::{
 use std::collections::HashMap;
 
 pub(crate) fn plugin(app: &mut App) {
-    app
-        .add_systems(Startup, setup)
-        .add_systems(Update, calculate_strain_system);
+    app.add_systems(Update, calculate_strain_system);
 }
 
-pub fn setup(
-    mut commands: Commands,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-    mut meshes: ResMut<Assets<Mesh>>,
-) {
-    // Create the mesh
-    let mesh = create_icosphere_mesh(1.0, 2);
-
-    // Store the rest state
-    let rest_state = RestState::from_mesh(&mesh);
-
-    // Add the mesh to the asset server and get a handle
-    let mesh_handle = meshes.add(mesh);
-
-    // Spawn the mesh entity with its rest state and strain tracking
-    commands.spawn((
-        Mesh3d(mesh_handle.clone()),
-        MeshMaterial3d(materials.add(StandardMaterial {
-            base_color: Color::srgb(0.8, 0.7, 0.6),
-            ..default()
-        })),
-        MeshHandle(mesh_handle),
-        rest_state,
-        Strain::default(), // Initialize with zero strain
-    ));
-}
+#[derive(Component)]
+pub struct MeshHandle(pub Handle<Mesh>);
 
 #[rustfmt::skip]
 pub fn create_cube_mesh() -> Mesh {
@@ -419,10 +393,6 @@ pub struct Strain {
     pub min_strain: f32,
 }
 
-/// Component that holds a mesh handle for strain calculation
-#[derive(Component)]
-pub struct MeshHandle(pub Handle<Mesh>);
-
 /// System that calculates strain for all meshes with RestState
 ///
 /// This compares the current mesh state with its rest state to compute
@@ -434,6 +404,7 @@ pub fn calculate_strain_system(
         &mut Strain,
     )>,
     meshes: Res<Assets<Mesh>>,
+    asset_server: Res<AssetServer>,
 ) {
     for (mesh_handle, rest_state, mut strain) in query.iter_mut() {
         // Get the current mesh data
