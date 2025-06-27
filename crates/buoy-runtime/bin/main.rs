@@ -2,15 +2,15 @@
 #![cfg_attr(not(feature = "dev"), windows_subsystem = "windows")]
 
 use bevy::prelude::*;
-use buoy_common::prelude::*;
 
 fn main() {
     let mut app = App::new();
 
     app.add_plugins((
-        BuoyDefaultPlugins,
+        buoy_runtime::BuoyDefaultPlugins,
         buoy_physics::BuoyPhysicsPlugin,
-        buoy_runtime::SimpleScenePlugin,
+
+        buoy_runtime::scene::SimpleScenePlugin,
     ));
 
     #[cfg(feature = "gui")]

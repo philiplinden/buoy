@@ -13,7 +13,6 @@ use uom::si::{
     pressure::kilopascal,
 };
 
-use buoy_common::prelude::*;
 use crate::{
     ideal_gas::{ideal_gas_density, GasSpecies},
     constants::{STANDARD_TEMPERATURE, STANDARD_PRESSURE},
@@ -21,22 +20,6 @@ use crate::{
 
 pub(crate) fn plugin(app: &mut App) {
     app.insert_resource(Atmosphere);
-    app.add_systems(
-        Update,
-        pause_on_out_of_bounds.run_if(in_state(SimState::Running)),
-    );
-}
-
-fn pause_on_out_of_bounds(
-    positions: Query<&Position, With<RigidBody>>,
-    mut state: ResMut<NextState<SimState>>,
-) {
-    for position in positions.iter() {
-        if position.y < Atmosphere::MIN_ALTITUDE || position.y > Atmosphere::MAX_ALTITUDE {
-            error!("Atmosphere out of bounds: {}", position.y);
-            state.set(SimState::Stopped);
-        }
-    }
 }
 
 /// US Standard Atmosphere, 1976

@@ -6,7 +6,6 @@ use uom::si::{
     mass_density::kilogram_per_cubic_meter, ratio::ratio, volume::cubic_meter,
 };
 
-use buoy_common::prelude::*;
 use crate::{
     atmosphere::Atmosphere,
     constants::{EARTH_RADIUS_M, STANDARD_GRAVITY},
@@ -21,7 +20,6 @@ pub(crate) fn plugin(app: &mut App) {
         (update_gravity)
             .chain()
             .in_set(PhysicsStepSet::First)
-            .run_if(in_state(SimState::Running)),
     );
 }
 
