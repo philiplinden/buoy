@@ -7,7 +7,6 @@ authors = { workspace = true }
 license = { workspace = true }
 
 [dependencies]
-buoy-common = { path = "../buoy-common" }
 bevy = { workspace = true }
 avian3d = { workspace = true }
 big_space = { workspace = true, optional = true}
@@ -18,12 +17,13 @@ default = [
     "dev",
 ]
 dev = [
+    "bevy/bevy_asset", # until we migrate mesh utils to operate on colliders
+    "bevy/bevy_render", # until we migrate mesh utils to operate on colliders
     "bevy/dynamic_linking",
     "bevy/bevy_debug_stepping",
     "avian3d/bevy_diagnostic",
 ]
 grid_space = [
-    "buoy-common/grid_space",
     "big_space",
 ]
 

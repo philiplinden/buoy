@@ -7,11 +7,10 @@ authors = { workspace = true }
 license = { workspace = true }
 
 [dependencies]
-buoy-common = { path = "../buoy-common", features = ["window"] }
 buoy-physics = { path = "../buoy-physics" }
 bevy = { workspace = true, features = [
     "bevy_asset",
-    "bevy_render",               # this includes bevy_mesh
+    "bevy_render",
     "bevy_core_pipeline",
     "bevy_pbr",
     "bevy_text",
@@ -31,7 +30,6 @@ bevy_egui = { version = "0.34.1" }
 [features]
 default = ["dev"]
 dev = [
-    "buoy-common/dev",
     "buoy-physics/dev",
     "bevy/dynamic_linking",
     "avian3d/diagnostic_ui",
@@ -39,7 +37,6 @@ dev = [
     "bevy/bevy_dev_tools",
 ]
 grid_space = [
-    "buoy-common/grid_space",
     "buoy-physics/grid_space",
     "big_space",
     "big_space/debug",

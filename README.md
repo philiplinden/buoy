@@ -3,6 +3,14 @@
 A buoyancy simulation environment built with [Bevy](https://bevyengine.org/) in
 Rust.
 
+## Structure
+
+The repository is structured as follows:
+
+- `crates/buoy-runtime`: Runtime code. This is what dispatches the simulation loop, sets up the physics, UI, renderer.
+- `crates/buoy-physics`: Physics simulation code.
+- `crates/buoy-ui`: UI code.
+
 ## License
 
 Except where noted (below and/or in individual files), all code in this

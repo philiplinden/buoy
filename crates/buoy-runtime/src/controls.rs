@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use buoy_common::prelude::*;
+use crate::RuntimeState;
 
 pub fn plugin(app: &mut App) {
     app.init_resource::<KeyBindingsConfig>();
@@ -61,16 +61,16 @@ impl Plugin for PausePlayPlugin {
 }
 
 fn toggle_pause(
-    sim_state: Res<State<SimState>>,
-    mut next_state: ResMut<NextState<SimState>>,
+    runtime_state: Res<State<RuntimeState>>,
+    mut next_state: ResMut<NextState<RuntimeState>>,
     key_input: Res<ButtonInput<KeyCode>>,
     key_bindings: Res<KeyBindingsConfig>,
 ) {
     if key_input.just_pressed(key_bindings.time_controls.toggle_pause) {
-        match sim_state.as_ref().get() {
-            SimState::Stopped => next_state.set(SimState::Running),
-            SimState::Running => next_state.set(SimState::Stopped),
-            _ => next_state.set(SimState::Running)
+        match runtime_state.as_ref().get() {
+            RuntimeState::Stopped => next_state.set(RuntimeState::Running),
+            RuntimeState::Running => next_state.set(RuntimeState::Stopped),
+            _ => next_state.set(RuntimeState::Running)
         }
     }
 }
