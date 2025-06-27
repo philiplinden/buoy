@@ -4,7 +4,7 @@ pub mod constants;
 pub mod forces;
 pub mod geometry;
 pub mod ideal_gas;
-pub mod mesh_utils;
+// pub mod mesh_utils;
 pub mod objects;
 
 #[cfg(feature = "grid_space")]
@@ -33,7 +33,7 @@ impl Plugin for BuoyPhysicsPlugin {
             atmosphere::plugin,
             ideal_gas::plugin,
             forces::plugin,
-            mesh_utils::plugin,
+            // mesh_utils::plugin,
             #[cfg(feature = "grid_space")]
             grid::plugin,
         ));

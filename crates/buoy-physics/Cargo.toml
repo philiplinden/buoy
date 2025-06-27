@@ -17,8 +17,6 @@ default = [
     "dev",
 ]
 dev = [
-    "bevy/bevy_asset", # until we migrate mesh utils to operate on colliders
-    "bevy/bevy_render", # until we migrate mesh utils to operate on colliders
     "bevy/dynamic_linking",
     "bevy/bevy_debug_stepping",
     "avian3d/bevy_diagnostic",
