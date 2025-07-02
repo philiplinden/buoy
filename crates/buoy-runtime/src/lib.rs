@@ -23,13 +23,6 @@ impl PluginGroup for BuoyDefaultPlugins {
         // Creature comforts
         group = group.add(format::PrettyPrintPlugin);
 
-        // disable TransformPlugin if grid_space feature is enabled
-        #[cfg(feature = "grid_space")]
-        {
-            // big_space requires TransformPlugin to be disabled
-            group = group.disable::<TransformPlugin>();
-        }
-
         // configure headless rendering if gui feature is disabled
         #[cfg(not(feature = "gui"))]
         {

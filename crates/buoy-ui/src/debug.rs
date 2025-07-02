@@ -5,12 +5,6 @@ use bevy::{
     prelude::*,
 };
 
-#[cfg(feature = "grid_space")]
-use {
-    big_space::{camera::CameraController, prelude::*},
-    buoy_physics::grid::Precision,
-};
-
 use crate::colors::ColorPalette;
 
 
@@ -20,10 +14,6 @@ pub(crate) fn plugin(app: &mut App) {
         WireframePlugin::default(),
         FpsOverlayPlugin::default(),
         TransformPathPlugin,
-    ));
-    #[cfg(feature = "grid_space")]
-    app.add_plugins((
-        FloatingOriginDebugPlugin::<Precision>::default(), // Draws cell AABBs and grids
     ));
     app.insert_resource(WireframeConfig {
         // The global wireframe config enables drawing of wireframes on every mesh,

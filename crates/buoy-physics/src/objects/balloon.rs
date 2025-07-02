@@ -5,7 +5,6 @@ use avian3d::prelude::*;
 #[require(Transform)]
 pub struct Balloon;
 
-
 impl Balloon {
     pub fn new() -> BalloonBundle {
         let balloon = Balloon;
