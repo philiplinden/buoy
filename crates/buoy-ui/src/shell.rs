@@ -1,5 +1,5 @@
 use bevy::{prelude::*, window::PrimaryWindow, winit::WinitSettings};
-use bevy_egui::{egui, EguiContextPass, EguiContexts};
+use bevy_egui::{egui, EguiContexts, EguiPrimaryContextPass};
 
 use super::camera;
 
@@ -17,7 +17,7 @@ pub(crate) fn plugin(app: &mut App) {
     app.insert_resource(WinitSettings::desktop_app())
         .init_resource::<OccupiedScreenSpace>()
         .add_systems(
-            EguiContextPass,
+            EguiPrimaryContextPass,
             (ui_example_system, update_camera_transform_system),
         );
 }
@@ -27,7 +27,13 @@ fn ui_example_system(
     mut contexts: EguiContexts,
     mut occupied_screen_space: ResMut<OccupiedScreenSpace>,
 ) {
-    let ctx = contexts.ctx_mut();
+    let ctx = match contexts.ctx_mut() {
+        Ok(ctx) => ctx,
+        Err(_) => {
+            warn!("No egui context found. Skipping UI example system.");
+            return;
+        },
+    };
 
     occupied_screen_space.left = egui::SidePanel::left("left_panel")
         .resizable(true)
