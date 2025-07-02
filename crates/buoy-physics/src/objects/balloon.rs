@@ -1,10 +1,8 @@
 use bevy::prelude::*;
-use avian3d::prelude::*;
 
 #[derive(Component, Default)]
 #[require(Transform)]
 pub struct Balloon;
-
 
 impl Balloon {
     pub fn new() -> BalloonBundle {
