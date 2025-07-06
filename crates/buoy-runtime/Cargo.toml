@@ -24,7 +24,11 @@ bevy_egui = { workspace = true, optional = true }
 
 [features]
 default = ["dev"]
-dev = ["buoy-physics/dev", "bevy/dynamic_linking"]
+dev = [
+    "bevy/dynamic_linking",
+    "bevy/bevy_debug_stepping",
+    "avian3d/bevy_diagnostic",
+]
 render = [
     "bevy/bevy_render",
     "bevy/bevy_core_pipeline",

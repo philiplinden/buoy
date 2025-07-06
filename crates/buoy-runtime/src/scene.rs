@@ -5,9 +5,7 @@
 //! config file or spawned at runtime.
 
 use bevy::prelude::*;
-use avian3d::prelude::*;
-use buoy_physics::objects::*;
-// use buoy_physics::mesh_utils::{create_icosphere_mesh, Strain, RestState};
+use crate::objects::*;
 
 pub struct SimpleScenePlugin;
 
@@ -15,7 +13,6 @@ impl Plugin for SimpleScenePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(PostStartup, setup_scene);
         app.add_systems(FixedUpdate, environment::update_ground_plane_collider);
-        app.add_systems(FixedUpdate, log_rigid_body_changes);
     }
 }
 
@@ -26,12 +23,4 @@ fn setup_scene(
     // let balloon_mesh = create_icosphere_mesh(1.0, 0);
     commands.spawn(Balloon::new());
     commands.spawn(GroundPlane::new((10.0, 10.0)));
-}
-
-fn log_rigid_body_changes(
-    mut query: Query<(Entity, &Transform), (With<RigidBody>, Changed<Transform>)>,
-) {
-    for (entity, transform) in query.iter_mut() {
-        info!("Entity: {:?} moved to: {:?}", entity, transform);
-    }
 }

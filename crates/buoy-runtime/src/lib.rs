@@ -2,6 +2,7 @@ pub mod controls;
 pub mod format;
 pub mod scene;
 pub mod sequencing;
+pub mod objects;
 
 #[cfg(feature = "render")]
 pub mod render;
