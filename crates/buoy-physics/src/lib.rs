@@ -1,16 +1,12 @@
 #![allow(unused_imports)]
 pub mod atmosphere;
 pub mod constants;
-pub mod forces;
 pub mod geometry;
 pub mod ideal_gas;
-// pub mod mesh_utils;
-pub mod objects;
-
+pub mod forces;
 pub mod prelude {
     pub use crate::{
         atmosphere::Atmosphere,
-        forces::{drag, scale_gravity},
         ideal_gas::{GasSpecies, IdealGas},
     };
 }
@@ -30,7 +26,6 @@ impl Plugin for BuoyPhysicsPlugin {
             atmosphere::plugin,
             ideal_gas::plugin,
             forces::plugin,
-            // mesh_utils::plugin,
         ));
     }
 }
