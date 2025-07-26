@@ -4,7 +4,8 @@
 use std::ops::{Div, Mul};
 
 use avian3d::math::Scalar;
-use bevy::prelude::*;
+use bevy::{asset::Asset, prelude::*, reflect::TypePath};
+use serde::Deserialize;
 use uom::si::{
     f32::{
         ThermodynamicTemperature, Pressure, Mass, Volume,
@@ -73,6 +74,14 @@ impl GasSpecies {
             molar_mass: MolarMass::new::<kilogram_per_mole>(0.0040026),
         }
     }
+
+    pub fn new(name: String, abbreviation: String, molar_mass: MolarMass) -> Self {
+        GasSpecies {
+            name,
+            abbreviation,
+            molar_mass,
+        }
+    }
 }
 
 impl Default for GasSpecies {
@@ -81,15 +90,27 @@ impl Default for GasSpecies {
     }
 }
 
-#[allow(dead_code)]
-impl GasSpecies {
-    pub fn new(name: String, abbreviation: String, molar_mass: MolarMass) -> Self {
+#[derive(Deserialize, Debug, Asset, TypePath, Clone)]
+pub struct GasSpeciesConfig {
+    pub name: String,
+    pub abbreviation: String,
+    pub molar_mass: f32, // [kg/mol]
+}
+
+impl GasSpeciesConfig {
+    pub fn to_species(&self) -> GasSpecies {
         GasSpecies {
-            name,
-            abbreviation,
-            molar_mass,
+            name: self.name.clone(),
+            abbreviation: self.abbreviation.clone(),
+            molar_mass: MolarMass::new::<kilogram_per_mole>(self.molar_mass),
         }
     }
+}
+
+#[derive(Deserialize, Debug, Asset, TypePath, Clone)]
+pub struct GasPropertiesConfig {
+    pub gases: Vec<GasSpeciesConfig>,
+    // materials: Vec<MaterialConfig>, // can be added later
 }
 
 /// Properties of an ideal gas per unit mass.

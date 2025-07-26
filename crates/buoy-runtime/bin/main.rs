@@ -8,16 +8,13 @@ fn main() {
 
     app.add_plugins((
         buoy_runtime::BuoyDefaultPlugins,
+        buoy_runtime::ConsolePlugin,
         buoy_physics::BuoyPhysicsPlugin,
-
-        buoy_runtime::scene::SimpleScenePlugin,
+        bevy_common_assets::ron::RonAssetPlugin::<buoy_physics::ideal_gas::GasPropertiesConfig>::new(&["configs/properties.ron"]),
     ));
 
     #[cfg(feature = "gui")]
-    app.add_plugins((
-        buoy_ui::BuoyUiPlugin,
-        bevy_egui::EguiPlugin::default(),
-    ));
+    app.add_plugins((buoy_gui::BuoyGuiPlugin, bevy_egui::EguiPlugin::default()));
     #[cfg(feature = "debug-ui")]
     app.add_plugins(bevy_inspector_egui::quick::WorldInspectorPlugin::new());
 

@@ -12,7 +12,7 @@ default-members = [
 ]
 
 [workspace.package]
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Philip Linden <lindenphilipj@gmail.com>"]
 readme = "README.md"
 edition = "2024"
@@ -37,6 +37,8 @@ avian3d = { version = "0.3.1", default-features = false, features = [
 ] }
 uom = "0.37.0"
 bevy_egui = { version = "0.35.0" }
+bevy_common_assets = { version = "0.13", features = ["ron"] }
+serde = { version = "1.0", features = ["derive"] }
 
 [workspace.metadata.bevy_cli]
 default_run = "buoy"

@@ -2,6 +2,7 @@ mod camera;
 mod lighting;
 mod shell;
 mod colors;
+mod controls;
 
 #[cfg(feature = "dev")]
 mod debug;
@@ -16,6 +17,7 @@ impl Plugin for BuoyUiPlugin {
             shell::plugin,
             camera::plugin,
             lighting::plugin,
+            controls::plugin,
         ));
 
         #[cfg(feature = "dev")]

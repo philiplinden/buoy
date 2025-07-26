@@ -1,12 +1,14 @@
-pub mod controls;
 pub mod format;
-pub mod scene;
 pub mod sequencing;
+pub mod objects;
+pub mod config;
+pub mod console;
 
 #[cfg(feature = "render")]
 pub mod render;
 
 use bevy::{app::PluginGroupBuilder, prelude::*};
+pub use console::ConsolePlugin;
 
 /// A custom flavor of Bevy's DefaultPlugins that includes common plugins used by Buoy.
 pub struct BuoyDefaultPlugins;
@@ -17,8 +19,7 @@ impl PluginGroup for BuoyDefaultPlugins {
 
         group = group
             .add(RuntimePlugin)
-            .add(sequencing::plugin)
-            .add(controls::plugin);
+            .add(sequencing::plugin);
 
         // Creature comforts
         group = group.add(format::PrettyPrintPlugin);

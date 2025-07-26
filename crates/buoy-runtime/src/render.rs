@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use buoy_physics::objects::GroundPlane;
+use crate::objects::GroundPlane;
 
 pub struct RenderPlugin;
 
