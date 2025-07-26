@@ -1,3 +1,29 @@
+//! Simulation pipeline organization and system sets
+//! 
+//! This module provides a structured approach to organizing the simulation pipeline
+//! using Bevy system sets. The `SimulationPipeline` enum defines the execution order
+//! and dependencies between different parts of the simulation.
+//! 
+//! ## Pipeline Stages
+//! 
+//! 1. **Input** - User input, events, and command parsing
+//! 2. **Physics** - Physics simulation and calculations
+//! 3. **Console** - REPL command execution and output
+//! 4. **Render** - Scene rendering and visual updates
+//! 5. **Ui** - UI rendering and interaction processing
+//! 
+//! ## Usage
+//! 
+//! ```rust
+//! use crate::sequencing::SimulationPipeline;
+//! 
+//! // Add a system to a specific pipeline stage
+//! app.add_systems(Update, my_system.in_set(SimulationPipeline::Physics));
+//! 
+//! // Or use the helper function
+//! SimulationPipeline::add_system_to_stage(&mut app, SimulationPipeline::Input, input_system);
+//! ```
+
 use avian3d::prelude::*;
 use bevy::prelude::*;
 
@@ -7,6 +33,23 @@ pub(crate) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(RuntimeState::Stopped), pause);
     app.add_systems(OnExit(RuntimeState::Stopped), unpause);
 
+    // Configure system sets for organized simulation pipeline
+    app.configure_sets(Update, SimulationPipeline::all());
+    
+    // Configure system sets for different runtime states
+    app.configure_sets(Update, (
+        SimulationPipeline::Input,
+        SimulationPipeline::Physics,
+        SimulationPipeline::Console,
+        SimulationPipeline::Render,
+        SimulationPipeline::Ui,
+    ).chain());
+    
+    // Configure conditional system sets based on runtime state
+    app.configure_sets(Update, 
+        SimulationPipeline::Physics
+            .run_if(in_state(RuntimeState::Running))
+    );
 }
 
 pub fn pause(mut physics_time: ResMut<Time<Physics>>, mut next_state: ResMut<NextState<RuntimeState>>) {
@@ -24,10 +67,64 @@ pub fn unpause(
     next_state.set(RuntimeState::Running);
 }
 
-// /// TODO: Split the runtime into system sets to keep physics and rendering consistent.
-// #[derive(SystemSet, Default, Clone, Copy, Hash, PartialEq, Eq)]
-// pub enum RuntimeSequenceSet {
-//     Physics, // This includes the entire physics pipeline
-//     Render, // Updates the renderer to match the current state of the scene
-//     Gui, // Updates the UI and processes inputs
-// }
+/// System sets to organize the simulation pipeline
+#[derive(SystemSet, Debug, Clone, Copy, Hash, PartialEq, Eq)]
+pub enum SimulationPipeline {
+    /// Input processing - handles user input, events, and command parsing
+    Input,
+    
+    /// Physics simulation - includes the entire physics pipeline
+    Physics,
+    
+    /// Console processing - REPL command execution and output
+    Console,
+    
+    /// Rendering - updates the renderer to match the current state of the scene
+    Render,
+    
+    /// GUI updates - UI rendering and interaction processing
+    Ui,
+}
+
+impl SimulationPipeline {
+    /// Returns all system sets in execution order
+    pub fn all() -> impl IntoIterator<Item = Self> {
+        [
+            Self::Input,
+            Self::Physics,
+            Self::Console,
+            Self::Render,
+            Self::Ui,
+        ]
+    }
+    
+    /// Returns system sets that should run when simulation is paused
+    pub fn paused_sets() -> impl IntoIterator<Item = Self> {
+        [
+            Self::Input,
+            Self::Console,
+            Self::Render,
+            Self::Ui,
+        ]
+    }
+    
+    /// Returns system sets that should run when simulation is running
+    pub fn running_sets() -> impl IntoIterator<Item = Self> {
+        [
+            Self::Input,
+            Self::Physics,
+            Self::Console,
+            Self::Render,
+            Self::Ui,
+        ]
+    }
+    
+    /// Helper function to add a system to a specific pipeline stage
+    pub fn add_system_to_stage<M>(
+        app: &mut App, 
+        stage: Self, 
+        system: impl IntoSystemConfigs<M>
+    ) {
+        app.add_systems(Update, system.in_set(stage));
+    }
+}

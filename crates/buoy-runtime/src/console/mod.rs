@@ -1,3 +1,4 @@
+pub mod commands;
 pub mod repl;
 
 use bevy::prelude::*;
