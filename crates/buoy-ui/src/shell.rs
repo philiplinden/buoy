@@ -18,11 +18,11 @@ pub(crate) fn plugin(app: &mut App) {
         .init_resource::<OccupiedScreenSpace>()
         .add_systems(
             EguiPrimaryContextPass,
-            (ui_example_system, update_camera_transform_system),
+            (ui_shell_system, update_camera_transform_system),
         );
 }
 
-fn ui_example_system(
+fn ui_shell_system(
     mut is_last_selected: Local<bool>,
     mut contexts: EguiContexts,
     mut occupied_screen_space: ResMut<OccupiedScreenSpace>,
