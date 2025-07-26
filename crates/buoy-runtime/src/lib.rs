@@ -1,8 +1,7 @@
-pub mod controls;
 pub mod format;
-pub mod scene;
 pub mod sequencing;
 pub mod objects;
+pub mod config;
 
 #[cfg(feature = "render")]
 pub mod render;
@@ -18,8 +17,7 @@ impl PluginGroup for BuoyDefaultPlugins {
 
         group = group
             .add(RuntimePlugin)
-            .add(sequencing::plugin)
-            .add(controls::plugin);
+            .add(sequencing::plugin);
 
         // Creature comforts
         group = group.add(format::PrettyPrintPlugin);

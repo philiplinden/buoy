@@ -9,8 +9,6 @@ fn main() {
     app.add_plugins((
         buoy_runtime::BuoyDefaultPlugins,
         buoy_physics::BuoyPhysicsPlugin,
-
-        buoy_runtime::scene::SimpleScenePlugin,
     ));
 
     #[cfg(feature = "gui")]
