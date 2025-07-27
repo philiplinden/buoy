@@ -82,6 +82,14 @@ impl GasSpecies {
             molar_mass,
         }
     }
+
+    pub fn from_species_name(name: String) -> Self {
+        match name.as_str() {
+            "air" => GasSpecies::air(),
+            "helium" => GasSpecies::helium(),
+            _ => panic!("Unknown gas species: {}", name),
+        }
+    }
 }
 
 impl Default for GasSpecies {
@@ -114,7 +122,7 @@ pub struct GasPropertiesConfig {
 }
 
 /// Properties of an ideal gas per unit mass.
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Component, Default, Debug, Clone, PartialEq)]
 pub struct IdealGas {
     pub species: GasSpecies,
     pub mass: Mass,
