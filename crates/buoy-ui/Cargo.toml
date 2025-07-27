@@ -7,8 +7,7 @@ authors = { workspace = true }
 license = { workspace = true }
 
 [dependencies]
-buoy_physics = { path = "../buoy-physics" }
-buoy_runtime = { path = "../buoy-runtime" }
+buoy-physics = { path = "../buoy-physics" }
 bevy = { workspace = true, features = [
     "bevy_asset",
     "bevy_render",
