@@ -20,7 +20,7 @@ fn main() {
     app.add_plugins(bevy_inspector_egui::quick::WorldInspectorPlugin::new());
 
     app.add_systems(PostStartup, setup_scenario);
-    app.add_systems(Update, balloon_props);
+    app.add_systems(FixedUpdate, balloon_props);
     app.run();
 }
 
@@ -38,16 +38,14 @@ fn setup_scenario(
             },
         ),
         RigidBody::Dynamic,
-        ExternalForce::default(),
+        ExternalForce::default().with_persistence(false),
     ));
 }
 
 fn balloon_props(
-    balloon: Query<(&Transform, &LinearVelocity, &ComputedMass), (With<Balloon>, Changed<Transform>)>,
+    balloon: Query<(&Transform, &LinearVelocity), (With<Balloon>, Changed<Transform>)>,
 ) {
-    for (transform, velocity, mass) in balloon.iter() {
-        info!("Position: {:?}", transform.translation);
-        info!("Velocity: {:?}", velocity.0);
-        info!("Mass: {:?}", mass.value());
+    for (transform, velocity) in balloon.iter() {
+        info!("Position: {:?}, Velocity: {:?}", transform.translation, velocity.0);
     }
 }
