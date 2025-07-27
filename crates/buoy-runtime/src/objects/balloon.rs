@@ -4,6 +4,8 @@ use serde::Deserialize;
 use bevy::asset::Asset;
 use bevy::reflect::TypePath;
 
+use buoy_physics::{forces::DragCoefficient, geometry::sphere_volume};
+
 #[derive(Component, Default)]
 #[require(Transform)]
 pub struct Balloon;
@@ -15,18 +17,21 @@ pub struct BalloonConfig {
     pub lift_gas_mass: f32, // kg
     pub balloon_mass: f32, // kg
     pub payload_mass: f32, // kg
+    pub drag_coefficient: f32,
 }
 
 impl Balloon {
     pub fn new() -> BalloonBundle {
         let balloon = Balloon;
         let radius = 1.0;
+        let mass = 1.0;
         BalloonBundle {
             name: Name::new("Balloon"),
             balloon,
             transform: Transform::from_xyz(0.0, radius*2.0, 0.0),
             collider: Collider::sphere(radius),
-            rigid_body: RigidBody::Dynamic,
+            collider_density: ColliderDensity(mass / sphere_volume(radius)),
+            drag_coefficient: DragCoefficient(0.47),
         }
     }
     pub fn new_from_config(config: &BalloonConfig) -> BalloonBundle {
@@ -37,7 +42,8 @@ impl Balloon {
             balloon,
             transform: Transform::from_xyz(0.0, radius*2.0, 0.0),
             collider: Collider::sphere(radius),
-            rigid_body: RigidBody::Dynamic,
+            collider_density: ColliderDensity(config.lift_gas_mass / sphere_volume(radius)),
+            drag_coefficient: DragCoefficient(config.drag_coefficient),
         }
     }
 }
@@ -48,5 +54,6 @@ pub struct BalloonBundle {
     balloon: Balloon,
     transform: Transform,
     collider: Collider,
-    rigid_body: RigidBody,
+    collider_density: ColliderDensity,
+    drag_coefficient: DragCoefficient,
 }

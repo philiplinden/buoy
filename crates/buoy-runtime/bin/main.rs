@@ -2,6 +2,7 @@
 #![cfg_attr(not(feature = "dev"), windows_subsystem = "windows")]
 
 use bevy::prelude::*;
+use avian3d::prelude::*;
 use buoy_runtime::objects::balloon::{Balloon, BalloonConfig};
 
 fn main() {
@@ -34,8 +35,11 @@ fn setup_scenario(
                 lift_gas_mass: 10.0,
                 balloon_mass: 1.0,
                 payload_mass: 1.0,
+                drag_coefficient: 0.47,
             },
         ),
+        RigidBody::Dynamic,
+        ExternalForce::default(),
     ));
 }
 
