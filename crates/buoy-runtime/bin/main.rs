@@ -20,7 +20,7 @@ fn main() {
     app.add_plugins(bevy_inspector_egui::quick::WorldInspectorPlugin::new());
 
     app.add_systems(PostStartup, setup_scenario);
-    app.add_systems(Update, log_balloon_position);
+    app.add_systems(Update, balloon_props);
     app.run();
 }
 
@@ -30,7 +30,6 @@ fn setup_scenario(
     commands.spawn((
         Balloon::new_from_config(
             &BalloonConfig {
-                balloon_size: 1.0,
                 lift_gas_species: "helium".to_string(),
                 lift_gas_mass: 10.0,
                 balloon_mass: 1.0,
@@ -43,10 +42,12 @@ fn setup_scenario(
     ));
 }
 
-fn log_balloon_position(
-    balloon: Query<&Transform, (With<Balloon>, Changed<Transform>)>,
+fn balloon_props(
+    balloon: Query<(&Transform, &LinearVelocity, &ComputedMass), (With<Balloon>, Changed<Transform>)>,
 ) {
-    for transform in balloon.iter() {
-        info!("{:?}", transform.translation);
+    for (transform, velocity, mass) in balloon.iter() {
+        info!("Position: {:?}", transform.translation);
+        info!("Velocity: {:?}", velocity.0);
+        info!("Mass: {:?}", mass.value());
     }
 }

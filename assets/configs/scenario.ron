@@ -1,8 +1,7 @@
 (
-    balloon_size: 10.0, // meters (diameter or radius, clarify in code)
     lift_gas_species: "helium",
     lift_gas_mass: 5.0, // kg
-    balloon_mass: 2.0, // kg
+    balloon_mass: 1.0, // kg
     payload_mass: 1.0, // kg
     drag_coefficient: 0.47,
 )
