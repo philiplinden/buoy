@@ -3,9 +3,6 @@ pub mod sequencing;
 pub mod objects;
 pub mod config;
 
-#[cfg(feature = "render")]
-pub mod render;
-
 use bevy::{app::PluginGroupBuilder, prelude::*};
 
 /// A custom flavor of Bevy's DefaultPlugins that includes common plugins used by Buoy.
@@ -23,14 +20,14 @@ impl PluginGroup for BuoyDefaultPlugins {
         group = group.add(format::PrettyPrintPlugin);
 
         // configure headless rendering if gui feature is disabled
-        #[cfg(not(feature = "gui"))]
+        #[cfg(not(feature = "windowed"))]
         {
             group = group.add(bevy::app::ScheduleRunnerPlugin::run_loop(
                 std::time::Duration::from_secs_f64(1.0 / 60.0),
             ));
         }
         // configure the window in default plugins if gui feature is enabled
-        #[cfg(feature = "gui")]
+        #[cfg(feature = "windowed")]
         {
             group = group.set(bevy::window::WindowPlugin {
                 primary_window: bevy::window::Window {
