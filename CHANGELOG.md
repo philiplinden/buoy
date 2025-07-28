@@ -7,6 +7,12 @@ Notable changes to this project will be documented in this file.
 ### 🧪 Experimental
 
 - Physics & Geometry update - janky but it works (#41) ([`7354de7`](https://github.com/philiplinden/buoy/commit/7354de7fbf79af0a58d1cde93f3144068bb4e2bc))
+- Isolate runtime and ui ([`891a7e8`](https://github.com/philiplinden/buoy/commit/891a7e80590e10aa33a9a1e2dcb7ce4a1c41b761))
+- Janky but it works ([`75423ad`](https://github.com/philiplinden/buoy/commit/75423ade08aa50a8c75298a01e77bebff210be50))
+- Add idealgas to balloon ([`60b0ccd`](https://github.com/philiplinden/buoy/commit/60b0ccd6566c5d40d556408e83048ed7b3b482e4))
+- Implement forces and advanced geometry functions ([`bfc9d8a`](https://github.com/philiplinden/buoy/commit/bfc9d8afab0cfafcd85befda4875291fe3480ff1))
+- Remove the repl for now ([`c4b0ddb`](https://github.com/philiplinden/buoy/commit/c4b0ddb8ce7b496221858da75da826efeb4ac09d))
+- Simulation pipeline stages and a better repl ([`ddf638f`](https://github.com/philiplinden/buoy/commit/ddf638f3b15e66007a91681094a26d9e14b86a18))
 
 ### ⚙️ Repository
 
