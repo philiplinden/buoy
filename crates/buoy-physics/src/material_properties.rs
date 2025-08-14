@@ -1,6 +1,6 @@
 /// The skin is the material that composes the outer surface of the balloon.
 /// TODO: Implement multiple material types, such as latex, polyurethane, etc.
-#[derive(Debug, Clone, Reflect)]
+#[derive(Debug, Clone)]
 pub struct Skin {
     // temperature (K) where the given material fails
     pub max_temperature: f32,

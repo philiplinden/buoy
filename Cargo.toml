@@ -2,7 +2,7 @@
 resolver = "2" # Important for Bevy
 members = [
     "crates/buoy-physics",
-    "crates/buoy-ui",
+    # "crates/buoy-ui",
     "crates/buoy-runtime",
 ]
 
@@ -36,7 +36,6 @@ avian3d = { version = "0.3.1", default-features = false, features = [
     # "collider-from-mesh",
 ] }
 uom = "0.37.0"
-bevy_common_assets = { version = "0.13", features = ["ron"] }
 serde = { version = "1.0", features = ["derive"] }
 
 [workspace.metadata.bevy_cli]

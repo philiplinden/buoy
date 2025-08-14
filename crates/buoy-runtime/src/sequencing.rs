@@ -8,7 +8,6 @@
 //!
 //! 1. **Input** - User input, events, and command parsing
 //! 2. **Physics** - Physics simulation and calculations
-//! 3. **Console** - REPL command execution and output
 //! 4. **Render** - Scene rendering and visual updates
 //! 5. **Ui** - UI rendering and interaction processing
 //!
@@ -19,9 +18,6 @@
 //!
 //! // Add a system to a specific pipeline stage
 //! app.add_systems(Update, my_system.in_set(SimulationPipeline::Physics));
-//!
-//! // Or use the helper function
-//! SimulationPipeline::add_system_to_stage(&mut app, SimulationPipeline::Input, input_system);
 //! ```
 
 use avian3d::prelude::*;

@@ -11,7 +11,7 @@ impl Plugin for PrettyPrintPlugin {
     }
 }
 
-#[derive(Component, Debug, Reflect)]
+#[derive(Debug, Reflect)]
 pub struct UomQuantity {
     value: f32,
     unit: String,
