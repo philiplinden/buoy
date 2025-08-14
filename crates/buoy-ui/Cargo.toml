@@ -40,7 +40,6 @@ default = ["dev"]
 dev = [
     "buoy-physics/dev",
     "buoy-runtime/dev",
-    "buoy-runtime/windowed",
     "bevy/dynamic_linking",
     "avian3d/diagnostic_ui",
     "avian3d/debug-plugin",

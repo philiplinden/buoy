@@ -10,38 +10,11 @@ pub struct BuoyDefaultPlugins;
 
 impl PluginGroup for BuoyDefaultPlugins {
     fn build(self) -> PluginGroupBuilder {
-        let mut group = PluginGroupBuilder::start::<Self>().add_group(DefaultPlugins);
-
-        group = group
+        PluginGroupBuilder::start::<Self>()
             .add(RuntimePlugin)
-            .add(sequencing::plugin);
-
-        // Creature comforts
-        group = group.add(format::PrettyPrintPlugin);
-
-        // configure headless rendering if gui feature is disabled
-        #[cfg(not(feature = "windowed"))]
-        {
-            group = group.add(bevy::app::ScheduleRunnerPlugin::run_loop(
-                std::time::Duration::from_secs_f64(1.0 / 60.0),
-            ));
-        }
-        // configure the window in default plugins if gui feature is enabled
-        #[cfg(feature = "windowed")]
-        {
-            group = group.set(bevy::window::WindowPlugin {
-                primary_window: bevy::window::Window {
-                    title: "buoy 🛟".to_string(),
-                    canvas: Some("#bevy".to_string()),
-                    fit_canvas_to_parent: true,
-                    prevent_default_event_handling: true,
-                    ..default()
-                }
-                .into(),
-                ..default()
-            });
-        }
-        group
+            .add(sequencing::plugin)
+            .add(format::PrettyPrintPlugin)
+            .add_group(bevy_repl::prelude::ReplPlugins)
     }
 }
 
