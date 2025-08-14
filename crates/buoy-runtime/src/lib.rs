@@ -1,9 +1,11 @@
 pub mod format;
-pub mod sequencing;
-pub mod objects;
-pub mod config;
+// pub mod sequencing;
+// pub mod objects;
+// pub mod config;
+// pub mod collider;
 
 use bevy::{app::PluginGroupBuilder, prelude::*};
+use bevy_repl::prelude::*;
 
 /// A custom flavor of Bevy's DefaultPlugins that includes common plugins used by Buoy.
 pub struct BuoyDefaultPlugins;
@@ -12,9 +14,8 @@ impl PluginGroup for BuoyDefaultPlugins {
     fn build(self) -> PluginGroupBuilder {
         PluginGroupBuilder::start::<Self>()
             .add(RuntimePlugin)
-            .add(sequencing::plugin)
             .add(format::PrettyPrintPlugin)
-            .add_group(bevy_repl::prelude::ReplPlugins)
+            .add_group(ReplPlugins)
     }
 }
 
@@ -33,3 +34,16 @@ pub enum RuntimeState {
     Running,
     Faulted,
 }
+
+// pub struct BuoyPhysicsPlugin;
+
+// impl Plugin for BuoyPhysicsPlugin {
+//     fn build(&self, app: &mut App) {
+//         app.add_plugins((
+//             PhysicsPlugins::default(),
+//             buoy_physics::atmosphere::plugin,
+//             buoy_physics::ideal_gas::plugin,
+//             buoy_physics::forces::plugin,
+//         ));
+//     }
+// }

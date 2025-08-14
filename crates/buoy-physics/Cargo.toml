@@ -1,26 +1,16 @@
 [package]
 name = "buoy-physics"
-version = "0.3.0"
-description = "Physics for buoyancy simulation"
+version = "0.4.0"
+description = "Physics for buoyancy simulation (no bevy dependency)"
 edition = { workspace = true }
 authors = { workspace = true }
 license = { workspace = true }
 
 [dependencies]
-bevy = { workspace = true }
-avian3d = { workspace = true }
 uom = { workspace = true }
 serde = { workspace = true }
+glam = "0.30.5"
+log = "0.4.27"
 
 [features]
-default = [
-    "dev",
-]
-dev = [
-    "bevy/dynamic_linking",
-    "bevy/bevy_debug_stepping",
-    "avian3d/bevy_diagnostic",
-]
-
-
-# [package.metadata.mutually_exclusive_features]
+default = []

@@ -5,25 +5,20 @@
 //! - https://www.translatorscafe.com/unit-converter/en-US/calculator/altitude
 //! - https://www.grc.nasa.gov/WWW/K-12/airplane/atmosmet.html
 
-use avian3d::prelude::{Position, RigidBody};
-use bevy::prelude::*;
 use uom::si::{
     f32::*,
     thermodynamic_temperature::{degree_celsius, kelvin},
     pressure::kilopascal,
 };
+use glam::Vec3;
+use log::error;
 
 use crate::{
     ideal_gas::{ideal_gas_density, GasSpecies},
     constants::{STANDARD_TEMPERATURE, STANDARD_PRESSURE},
 };
 
-pub(crate) fn plugin(app: &mut App) {
-    app.insert_resource(Atmosphere);
-}
-
 /// US Standard Atmosphere, 1976
-#[derive(Resource)]
 pub struct Atmosphere;
 
 impl Atmosphere {
