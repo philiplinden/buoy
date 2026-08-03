@@ -41,8 +41,3 @@ pub static STANDARD_PRESSURE: LazyLock<Pressure> =
 
 /// The radius of the Earth in meters.
 pub static EARTH_RADIUS_M: LazyLock<Length> = LazyLock::new(|| Length::new::<meter>(6371007.2));
-
-/// The scale factor for translations. This is used to convert between
-/// simulation units and world units. One unit in the simulation is this
-/// dimension in the real world.
-pub const TRANSLATION_SCALE: LazyLock<Length> = LazyLock::new(|| Length::new::<meter>(1.0));

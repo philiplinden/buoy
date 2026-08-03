@@ -1,18 +1,18 @@
 [workspace]
 resolver = "2" # Important for Bevy
 members = [
-    "crates/buoy-physics",
+    "crates/buoy-core",
+    "crates/buoy-atmo",
+    # "crates/buoy-gfx",
     # "crates/buoy-ui",
-    "crates/buoy-runtime",
 ]
 
 default-members = [
-    "crates/buoy-physics",
-    "crates/buoy-runtime",
+    "crates/buoy-core"
 ]
 
 [workspace.package]
-version = "0.3.0"
+version = "0.5.0"
 authors = ["Philip Linden <lindenphilipj@gmail.com>"]
 readme = "README.md"
 edition = "2024"
@@ -21,9 +21,9 @@ license-file = "LICENSE-APACHE"
 
 [workspace.dependencies]
 bevy = { version = "0.16.1", default-features = false, features = [
+    "bevy_log",
     "bevy_state",
     "multi_threaded",
-    "bevy_log",
     "trace",
 ] }
 avian3d = { version = "0.3.1", default-features = false, features = [
@@ -33,10 +33,12 @@ avian3d = { version = "0.3.1", default-features = false, features = [
     "enhanced-determinism",
     "parallel",
     "default-collider",
-    # "collider-from-mesh",
 ] }
 uom = "0.37.0"
 serde = { version = "1.0", features = ["derive"] }
+bevy_common_assets = { version = "0.13.0", features = ["ron", "yaml"] }
+bevy_repl = { version = "0.4.1", features = ["derive"] }
+clap = { version = "^4.0", features = ["derive"] }
 
 [workspace.metadata.bevy_cli]
 default_run = "buoy"

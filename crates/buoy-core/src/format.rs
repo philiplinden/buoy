@@ -1,17 +1,7 @@
 use std::fmt::Display;
-use bevy::prelude::*;
 use uom::si::Quantity;
 
-/// A plugin that registers common types used by Buoy.
-pub struct PrettyPrintPlugin;
-
-impl Plugin for PrettyPrintPlugin {
-    fn build(&self, app: &mut App) {
-        app.register_type::<UomQuantity>();
-    }
-}
-
-#[derive(Debug, Reflect)]
+#[derive(Debug)]
 pub struct UomQuantity {
     value: f32,
     unit: String,

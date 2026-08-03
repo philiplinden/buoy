@@ -1,0 +1,13 @@
+[package]
+name = "buoy-atmo"
+version = "0.1.0"
+description = "Atmosphere for the Buoy simulator"
+edition = { workspace = true }
+authors = { workspace = true }
+license = { workspace = true }
+
+[dependencies]
+buoy-core = { path = "../buoy-core" }
+bevy = { workspace = true }
+avian3d = { workspace = true }
+serde = { workspace = true }

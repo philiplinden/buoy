@@ -1,5 +1,4 @@
 mod camera;
-mod lighting;
 mod shell;
 mod colors;
 mod controls;
@@ -16,7 +15,6 @@ impl Plugin for BuoyUiPlugin {
         app.add_plugins((
             shell::plugin,
             camera::plugin,
-            lighting::plugin,
             controls::plugin,
         ));
 

@@ -1,4 +1,4 @@
-use glam::{Vec2, Vec3};
+use bevy::prelude::*;
 use crate::constants::PI;
 
 /// Generate the 8 corners of a cuboid from its half-size
