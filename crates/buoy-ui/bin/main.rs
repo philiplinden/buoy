@@ -9,6 +9,13 @@ fn main() {
     let mut app = App::new();
 
     app.add_plugins((
+        DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                title: "buoy".to_string(),
+                ..default()
+            }),
+            ..default()
+        }),
         buoy_physics::BuoyDefaultPlugins,
         buoy_physics::BuoyPhysicsPlugin,
         buoy_ui::BuoyUiPlugin,
