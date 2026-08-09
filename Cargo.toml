@@ -24,15 +24,6 @@ bevy = { version = "0.16.1", default-features = false, features = [
     "bevy_log",
     "trace",
 ] }
-avian3d = { version = "0.3.1", default-features = false, features = [
-    "3d",
-    "f32",
-    "parry-f32",
-    "enhanced-determinism",
-    "parallel",
-    "default-collider",
-    # "collider-from-mesh",
-] }
 uom = "0.37.0"
 bevy_common_assets = { version = "0.13", features = ["ron"] }
 serde = { version = "1.0", features = ["derive"] }

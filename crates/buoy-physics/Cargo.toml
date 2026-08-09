@@ -13,7 +13,6 @@ path = "bin/main.rs"
 
 [dependencies]
 bevy = { workspace = true, features = ["bevy_asset"] }
-avian3d = { workspace = true }
 uom = { workspace = true }
 serde = { workspace = true }
 bevy_common_assets = { workspace = true }
@@ -26,7 +25,6 @@ default = [
 dev = [
     "bevy/dynamic_linking",
     "bevy/bevy_debug_stepping",
-    "avian3d/bevy_diagnostic",
 ]
 
 

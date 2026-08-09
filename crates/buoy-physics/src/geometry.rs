@@ -1,11 +1,7 @@
 #![allow(dead_code)]
 
 use crate::constants::PI;
-use avian3d::{
-    parry::shape::ShapeType,
-    prelude::*,
-};
-use bevy::prelude::{Component, Quat, Vec2, Vec3};
+use bevy::prelude::{Component, Vec2, Vec3};
 
 pub fn sphere_volume(radius: f32) -> f32 {
     (4.0 / 3.0) * PI * f32::powf(radius, 3.0)
@@ -82,16 +78,6 @@ fn generate_cuboid_corners(half_size: Vec3) -> Vec<Vec3> {
     ]
 }
 
-/// AABB projected area fallback
-/// Use the projected area of the collider's AABB in the direction
-fn aabb_projected_area(collider: &Collider, direction: Vec3) -> f32 {
-    // Get the AABB of the collider
-    let aabb = collider.aabb(Vec3::ZERO, Quat::from_rotation_arc(Vec3::Z, direction));
-    let half_size = aabb_half_extents(&aabb);
-    let corners = generate_cuboid_corners(half_size);
-    projected_area_of_convex_hull(&corners, direction)
-}
-
 /// Projected area for capsule shape
 pub fn projected_area_of_capsule(radius: f32, half_height: f32, direction: Vec3) -> f32 {
     let nx = direction.x.abs();
@@ -105,60 +91,6 @@ pub fn projected_area_of_capsule(radius: f32, half_height: f32, direction: Vec3)
     let caps_area = PI * radius * radius * (nx + ny);
 
     cylindrical_area + caps_area
-}
-
-/// Calculate the projected area of a collider in the direction of motion.
-/// Used for aerodynamic drag force calculations: F_drag = 0.5 * rho * v^2 * C_d * A_projected
-pub fn projected_area(collider: &Collider, direction: Vec3) -> f32 {
-    let normalized_direction = direction.normalize();
-    let shape = collider.shape();
-    let shape_type = shape.shape_type();
-
-    match shape_type {
-        // 1. Sphere – Use analytical projection: π * r²
-        ShapeType::Ball => {
-            if let Some(radius) = shape.as_ball() {
-                projected_area_of_sphere(radius.radius, normalized_direction)
-            } else {
-                aabb_projected_area(collider, normalized_direction)
-            }
-        }
-
-        // 2. Cuboid – Project all 8 corners, form 2D convex hull, return area
-        ShapeType::Cuboid => {
-            if let Some(cuboid) = shape.as_cuboid() {
-                let corners = generate_cuboid_corners(cuboid.half_extents.into());
-                projected_area_of_convex_hull(&corners, normalized_direction)
-            } else {
-                aabb_projected_area(collider, normalized_direction)
-            }
-        }
-
-        // 3. Cylinder – Use analytical formula
-        ShapeType::Cylinder => {
-            if let Some(cylinder) = shape.as_cylinder() {
-                projected_area_of_cylinder(
-                    cylinder.radius,
-                    cylinder.half_height * 2.0,
-                    normalized_direction,
-                )
-            } else {
-                aabb_projected_area(collider, normalized_direction)
-            }
-        }
-
-        // 4. Capsule – Use analytical formula
-        ShapeType::Capsule => {
-            if let Some(capsule) = shape.as_capsule() {
-                projected_area_of_capsule(capsule.radius, capsule.half_height(), normalized_direction)
-            } else {
-                aabb_projected_area(collider, normalized_direction)
-            }
-        }
-
-        // 5. ConvexHull and other shapes – no analytical formula, use AABB fallback
-        _ => aabb_projected_area(collider, normalized_direction),
-    }
 }
 
 pub fn project_vertices_onto_plane(points: &[Vec3], normal: Vec3) -> Vec<Vec2> {
@@ -250,67 +182,8 @@ pub fn convex_polyhedron_volume(points: &[Vec3], faces: &[Vec<usize>]) -> f32 {
     volume / 3.0
 }
 
-/// Calculate the volume of a collider
-pub fn collider_volume(collider: &Collider) -> f32 {
-    let shape = collider.shape();
-    let shape_type = shape.shape_type();
-
-    match shape_type {
-        ShapeType::Ball => {
-            if let Some(ball) = shape.as_ball() {
-                sphere_volume(ball.radius)
-            } else {
-                0.0
-            }
-        }
-
-        ShapeType::Cuboid => {
-            if let Some(cuboid) = shape.as_cuboid() {
-                cuboid_volume(cuboid.half_extents.into())
-            } else {
-                0.0
-            }
-        }
-
-        ShapeType::Cylinder => {
-            if let Some(cylinder) = shape.as_cylinder() {
-                cylinder_volume(cylinder.radius, cylinder.half_height * 2.0)
-            } else {
-                0.0
-            }
-        }
-
-        ShapeType::Capsule => {
-            if let Some(capsule) = shape.as_capsule() {
-                capsule_volume(capsule.radius, capsule.half_height())
-            } else {
-                0.0
-            }
-        }
-
-        _ => {
-            // For other shapes, use AABB volume as fallback
-            let aabb = collider.aabb(Vec3::ZERO, Quat::IDENTITY);
-            aabb_volume(&aabb) * 0.5 // Conservative estimate
-        }
-    }
-}
-
-/// Get the half-extents of an AABB (half of the size)
-pub fn aabb_half_extents(aabb: &ColliderAabb) -> Vec3 {
-    aabb.size() * 0.5
-}
-
-/// Calculate the volume of an AABB
-pub fn aabb_volume(aabb: &ColliderAabb) -> f32 {
-    let size = aabb.size();
-    size.x * size.y * size.z
-}
-
-/// A minimal shape description independent of Avian's `Collider`. Only
-/// covers the shapes Buoy actually spawns (spheres and cuboids); will
-/// replace `Collider` entirely once the physics integration itself no
-/// longer depends on Avian.
+/// A minimal shape description used for buoyancy/drag geometry. Only covers
+/// the shapes Buoy actually spawns (spheres and cuboids).
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub enum Shape {
     Sphere { radius: f32 },
@@ -346,51 +219,29 @@ mod tests {
     }
 
     #[test]
-    fn sphere_volume_matches_collider() {
-        let radius = 2.5;
-        let shape = Shape::Sphere { radius };
-        let collider = Collider::sphere(radius);
-        assert_approx_eq(shape.volume(), collider_volume(&collider), 1e-4);
+    fn sphere_volume_is_correct() {
+        let shape = Shape::Sphere { radius: 2.5 };
+        assert_approx_eq(shape.volume(), 65.44985, 1e-4);
     }
 
     #[test]
-    fn sphere_projected_area_matches_collider() {
-        let radius = 1.7;
-        let direction = Vec3::new(1.0, 2.0, 3.0);
-        let shape = Shape::Sphere { radius };
-        let collider = Collider::sphere(radius);
+    fn sphere_projected_area_is_correct() {
+        let shape = Shape::Sphere { radius: 1.7 };
+        assert_approx_eq(shape.projected_area(Vec3::new(1.0, 2.0, 3.0)), 9.079204, 1e-4);
+    }
+
+    #[test]
+    fn cuboid_volume_is_correct() {
+        let shape = Shape::Cuboid { half_extents: Vec3::new(1.0, 2.0, 3.0) };
+        assert_approx_eq(shape.volume(), 48.0, 1e-3);
+    }
+
+    #[test]
+    fn cuboid_projected_area_is_correct() {
+        let shape = Shape::Cuboid { half_extents: Vec3::new(1.0, 2.0, 3.0) };
         assert_approx_eq(
-            shape.projected_area(direction),
-            projected_area(&collider, direction),
-            1e-4,
-        );
-    }
-
-    #[test]
-    fn cuboid_volume_matches_collider() {
-        let half_extents = Vec3::new(1.0, 2.0, 3.0);
-        let shape = Shape::Cuboid { half_extents };
-        let collider = Collider::cuboid(
-            half_extents.x * 2.0,
-            half_extents.y * 2.0,
-            half_extents.z * 2.0,
-        );
-        assert_approx_eq(shape.volume(), collider_volume(&collider), 1e-3);
-    }
-
-    #[test]
-    fn cuboid_projected_area_matches_collider() {
-        let half_extents = Vec3::new(1.0, 2.0, 3.0);
-        let direction = Vec3::new(0.3, 0.6, 0.1);
-        let shape = Shape::Cuboid { half_extents };
-        let collider = Collider::cuboid(
-            half_extents.x * 2.0,
-            half_extents.y * 2.0,
-            half_extents.z * 2.0,
-        );
-        assert_approx_eq(
-            shape.projected_area(direction),
-            projected_area(&collider, direction),
+            shape.projected_area(Vec3::new(0.3, 0.6, 0.1)),
+            2.3590713,
             1e-3,
         );
     }
