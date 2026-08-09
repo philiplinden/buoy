@@ -3,7 +3,8 @@
 
 use std::ops::{Div, Mul};
 
-use bevy::{asset::Asset, prelude::*, reflect::TypePath};
+#[cfg(feature = "bevy")]
+use bevy::{asset::Asset, prelude::{App, Component}, reflect::TypePath};
 use serde::Deserialize;
 use uom::si::{
     f32::{
@@ -23,6 +24,7 @@ use crate::{
     geometry::sphere_volume,
 };
 
+#[cfg(feature = "bevy")]
 pub(crate) fn plugin(_app: &mut App) {
     // nothing yet
 }
@@ -49,7 +51,8 @@ pub fn ideal_gas_density(
 }
 
 /// Molecular species of a gas.
-#[derive(Component, Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "bevy", derive(Component))]
+#[derive(Debug, Clone, PartialEq)]
 pub struct GasSpecies {
     pub name: String,
     pub abbreviation: String,
@@ -97,7 +100,8 @@ impl Default for GasSpecies {
     }
 }
 
-#[derive(Deserialize, Debug, Asset, TypePath, Clone)]
+#[cfg_attr(feature = "bevy", derive(Asset, TypePath))]
+#[derive(Deserialize, Debug, Clone)]
 pub struct GasSpeciesConfig {
     pub name: String,
     pub abbreviation: String,
@@ -114,14 +118,16 @@ impl GasSpeciesConfig {
     }
 }
 
-#[derive(Deserialize, Debug, Asset, TypePath, Clone)]
+#[cfg_attr(feature = "bevy", derive(Asset, TypePath))]
+#[derive(Deserialize, Debug, Clone)]
 pub struct GasPropertiesConfig {
     pub gases: Vec<GasSpeciesConfig>,
     // materials: Vec<MaterialConfig>, // can be added later
 }
 
 /// Properties of an ideal gas per unit mass.
-#[derive(Component, Default, Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "bevy", derive(Component))]
+#[derive(Default, Debug, Clone, PartialEq)]
 pub struct IdealGas {
     pub species: GasSpecies,
     pub mass: Mass,

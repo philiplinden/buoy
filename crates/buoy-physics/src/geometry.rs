@@ -1,7 +1,9 @@
 #![allow(dead_code)]
 
 use crate::constants::PI;
-use bevy::prelude::{Component, Vec2, Vec3};
+#[cfg(feature = "bevy")]
+use bevy::prelude::Component;
+use glam::{Vec2, Vec3};
 
 pub fn sphere_volume(radius: f32) -> f32 {
     (4.0 / 3.0) * PI * f32::powf(radius, 3.0)
@@ -184,7 +186,8 @@ pub fn convex_polyhedron_volume(points: &[Vec3], faces: &[Vec<usize>]) -> f32 {
 
 /// A minimal shape description used for buoyancy/drag geometry. Only covers
 /// the shapes Buoy actually spawns (spheres and cuboids).
-#[derive(Component, Debug, Clone, Copy, PartialEq)]
+#[cfg_attr(feature = "bevy", derive(Component))]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Shape {
     Sphere { radius: f32 },
     Cuboid { half_extents: Vec3 },

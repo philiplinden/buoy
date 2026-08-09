@@ -1,11 +1,13 @@
 pub mod atmosphere;
 pub mod config;
 pub mod constants;
+#[cfg(feature = "bevy")]
 pub mod format;
 pub mod geometry;
 pub mod ideal_gas;
 pub mod forces;
 pub mod objects;
+#[cfg(feature = "bevy")]
 pub mod sequencing;
 pub mod prelude {
     pub use crate::{
@@ -13,17 +15,21 @@ pub mod prelude {
         forces::{Mass, Velocity},
         geometry::Shape,
         ideal_gas::{GasSpecies, IdealGas},
+        RuntimeState,
     };
 }
 
+#[cfg(feature = "bevy")]
 use bevy::{
     app::{PluginGroup, PluginGroupBuilder},
     prelude::*,
     time::TimePlugin,
 };
 
+#[cfg(feature = "bevy")]
 pub struct BuoyPhysicsPlugin;
 
+#[cfg(feature = "bevy")]
 impl Plugin for BuoyPhysicsPlugin {
     fn build(&self, app: &mut App) {
         // `forces::plugin` runs in FixedUpdate, which needs `TimePlugin` for
@@ -38,8 +44,10 @@ impl Plugin for BuoyPhysicsPlugin {
 }
 
 /// A custom flavor of Bevy's DefaultPlugins that includes common plugins used by Buoy.
+#[cfg(feature = "bevy")]
 pub struct BuoyDefaultPlugins;
 
+#[cfg(feature = "bevy")]
 impl PluginGroup for BuoyDefaultPlugins {
     fn build(self) -> PluginGroupBuilder {
         PluginGroupBuilder::start::<Self>()
@@ -50,15 +58,18 @@ impl PluginGroup for BuoyDefaultPlugins {
     }
 }
 
+#[cfg(feature = "bevy")]
 struct RuntimePlugin;
 
+#[cfg(feature = "bevy")]
 impl Plugin for RuntimePlugin {
     fn build(&self, app: &mut App) {
         app.init_state::<RuntimeState>();
     }
 }
 
-#[derive(States, Debug, Default, Clone, Copy, Hash, PartialEq, Eq)]
+#[cfg_attr(feature = "bevy", derive(bevy::prelude::States))]
+#[derive(Debug, Default, Clone, Copy, Hash, PartialEq, Eq)]
 pub enum RuntimeState {
     Stopped,
     #[default]

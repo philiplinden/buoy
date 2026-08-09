@@ -67,6 +67,20 @@ env:
   RUSTFLAGS: -Awarnings -Zshare-generics=y -Zthreads=0
 
 jobs:
+  # Guards the bevy-free module seam (docs/adr/0001-bevy-free-physics-core-module-seam.md):
+  # fails loud if a core module picks up a stray `use bevy::...`.
+  check-bevy-free-core:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@nightly
+      - name: Restore Rust cache
+        uses: Swatinem/rust-cache@v2
+      - name: Check buoy-physics compiles without bevy
+        run: cargo check -p buoy-physics --no-default-features --lib
+
   # Forward some environment variables as outputs of this job.
   # This is needed because the `env` context can't be used in the `if:` condition of a job:
   # <https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability>

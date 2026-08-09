@@ -27,6 +27,8 @@ bevy = { version = "0.16.1", default-features = false, features = [
 uom = "0.37.0"
 bevy_common_assets = { version = "0.13", features = ["ron"] }
 serde = { version = "1.0", features = ["derive"] }
+glam = "0.29"
+log = "0.4"
 
 [workspace.metadata.bevy_cli]
 default_run = "buoy"

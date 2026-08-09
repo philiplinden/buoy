@@ -12,16 +12,20 @@ name = "buoy"
 path = "bin/main.rs"
 
 [dependencies]
-bevy = { workspace = true, features = ["bevy_asset"] }
+glam = { workspace = true }
 uom = { workspace = true }
 serde = { workspace = true }
-bevy_common_assets = { workspace = true }
-bevy_repl = { version = "0.3.0", features = ["derive"] }
+log = { workspace = true }
+bevy = { workspace = true, features = ["bevy_asset"], optional = true }
+bevy_common_assets = { workspace = true, optional = true }
+bevy_repl = { version = "0.3.0", features = ["derive"], optional = true }
 
 [features]
 default = [
+    "bevy",
     "dev",
 ]
+bevy = ["dep:bevy", "dep:bevy_common_assets", "dep:bevy_repl"]
 dev = [
     "bevy/dynamic_linking",
     "bevy/bevy_debug_stepping",

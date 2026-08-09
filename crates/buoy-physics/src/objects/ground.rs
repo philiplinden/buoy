@@ -1,11 +1,14 @@
-use bevy::prelude::*;
+use glam::Vec3;
+#[cfg(feature = "bevy")]
+use bevy::prelude::{Bundle, Changed, Commands, Component, Entity, Name, Query, Transform};
 use crate::geometry::Shape;
 
 /// Component marking a ground plane in the simulation. Has no `Mass` or
 /// `Velocity`, so it's never picked up by the physics integrator - it just
 /// sits there.
-#[derive(Component, Debug, Clone, Copy)]
-#[require(Transform)]
+#[cfg_attr(feature = "bevy", derive(Component))]
+#[cfg_attr(feature = "bevy", require(Transform))]
+#[derive(Debug, Clone, Copy)]
 pub struct GroundPlane {
     pub extents: (f32, f32),
     pub thickness: f32,
@@ -28,6 +31,7 @@ impl GroundPlane {
 }
 
 /// All the components needed to create a ground plane.
+#[cfg(feature = "bevy")]
 #[derive(Bundle)]
 pub struct GroundPlaneBundle {
     name: Name,
@@ -36,6 +40,7 @@ pub struct GroundPlaneBundle {
     shape: Shape,
 }
 
+#[cfg(feature = "bevy")]
 impl GroundPlane {
     pub fn new(extents: (f32, f32)) -> impl Bundle {
         let ground_plane = GroundPlane { extents, thickness: 0.01 };
@@ -50,6 +55,7 @@ impl GroundPlane {
 }
 
 /// System to update the shape of a ground plane when its extents change.
+#[cfg(feature = "bevy")]
 pub fn update_ground_plane_collider(
     mut commands: Commands,
     mut query: Query<(Entity, &GroundPlane), Changed<GroundPlane>>, // This filter makes the system run only when GroundPlane changes

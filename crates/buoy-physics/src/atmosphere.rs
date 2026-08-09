@@ -5,24 +5,27 @@
 //! - https://www.translatorscafe.com/unit-converter/en-US/calculator/altitude
 //! - https://www.grc.nasa.gov/WWW/K-12/airplane/atmosmet.html
 
-use bevy::prelude::*;
+use glam::Vec3;
 use uom::si::{
     f32::*,
     thermodynamic_temperature::{degree_celsius, kelvin},
     pressure::kilopascal,
 };
+#[cfg(feature = "bevy")]
+use bevy::prelude::{App, Resource};
 
 use crate::{
     ideal_gas::{ideal_gas_density, GasSpecies},
     constants::{STANDARD_TEMPERATURE, STANDARD_PRESSURE},
 };
 
+#[cfg(feature = "bevy")]
 pub(crate) fn plugin(app: &mut App) {
     app.insert_resource(Atmosphere);
 }
 
 /// US Standard Atmosphere, 1976
-#[derive(Resource)]
+#[cfg_attr(feature = "bevy", derive(Resource))]
 pub struct Atmosphere;
 
 impl Atmosphere {
@@ -33,7 +36,7 @@ impl Atmosphere {
     pub fn temperature(&self, position: Vec3) -> ThermodynamicTemperature {
         // TODO: Look up temperature based on latitude, longitude, not just altitude
         coesa_temperature(position.y).unwrap_or_else(|e| {
-            error!("Atmosphere temperature out of bounds: {}", e);
+            log::error!("Atmosphere temperature out of bounds: {}", e);
             STANDARD_TEMPERATURE.clone()
         }) // we should handle this better
     }
@@ -42,7 +45,7 @@ impl Atmosphere {
     pub fn pressure(&self, position: Vec3) -> Pressure {
         // TODO: Look up pressure based on latitude, longitude, not just altitude
         coesa_pressure(position.y).unwrap_or_else(|e| {
-            error!("Atmosphere pressure out of bounds: {}", e);
+            log::error!("Atmosphere pressure out of bounds: {}", e);
             STANDARD_PRESSURE.clone()
         }) // we should handle this better
     }
