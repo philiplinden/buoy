@@ -2,6 +2,12 @@
 
 Notable changes to this project will be documented in this file.
 
+## [unreleased]
+
+### 📚 Documentation
+
+- Log ([`5db430c`](https://github.com/philiplinden/buoy/commit/5db430c598a2bd6dd7645f0cedd8b56d30ba53ba))
+
 ## [0.3.0](https://github.com/philiplinden/buoy/compare/v0.2.0..v0.3.0) - 2025-07-28
 
 ### 🧪 Experimental
