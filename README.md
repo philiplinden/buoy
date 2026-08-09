@@ -10,6 +10,20 @@ The repository is structured as follows:
 - `crates/buoy-physics`: Physics simulation and runtime code. This dispatches the simulation loop and sets up the physics.
 - `crates/buoy-ui`: UI code.
 
+## Running
+
+Run the headless simulation:
+
+```sh
+cargo run --bin buoy
+```
+
+Run the simulation with the UI:
+
+```sh
+cargo run --bin buoy-ui
+```
+
 ## License
 
 Except where noted (below and/or in individual files), all code in this
