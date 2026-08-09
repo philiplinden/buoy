@@ -26,6 +26,10 @@ jobs:
           # Otherwise, you might end up getting empty changelogs or git ref
           # errors depending on arguments passed to git-cliff.
           fetch-depth: 0
+          # fetch-depth: 0 does NOT imply tags are fetched. Without this,
+          # git-cliff sees zero tags and thinks it's bootstrapping a
+          # brand-new repo.
+          fetch-tags: true
 
       - name: Generate an incremental changelog
         uses: orhun/git-cliff-action@main
