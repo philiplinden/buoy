@@ -2,29 +2,6 @@
 
 Notable changes to this project will be documented in this file.
 
-## [unreleased]
-
-### ⚙️ Repository
-
-- Fix changelog workflow tag fetching ([`2455a08`](https://github.com/philiplinden/buoy/commit/2455a08ffcfb8f05453c7a74272aa91e874ac7a6))
-
-## [0.4.0](https://github.com/philiplinden/buoy/compare/v0.3.0..v0.4.0) - 2026-08-09
-
-### 📚 Documentation
-
-- Update readme ([`32ac483`](https://github.com/philiplinden/buoy/commit/32ac48343693de9919e8ec4eb535fda32b531ae8))
-
-### ♻️ Refactor
-
-- Avian removal is complete ([`e68bbe9`](https://github.com/philiplinden/buoy/commit/e68bbe9583983860eb7defbf60756ca2424bcab1))
-- Remove avian, merge buoy-runtime and buoy-physics ([`a141b72`](https://github.com/philiplinden/buoy/commit/a141b7254c5310ca011e9f544705aeecf2778f96))
-- Replace avian debug crate; deleted projected area functions ([`289bdd1`](https://github.com/philiplinden/buoy/commit/289bdd1bf466c2a62dc0d5fc75de44b21999bc39))
-- Replace avian debug crate; deleted projected area functions ([`5f33148`](https://github.com/philiplinden/buoy/commit/5f33148f64d505337247ca26def6bdcb39d0a346))
-
-### 🎨 UI & Styling
-
-- Fix plugin deps ([`dae9c09`](https://github.com/philiplinden/buoy/commit/dae9c09d5c958eb78ee6887b31795285cfbb7cc9))
-
 ## [0.3.0](https://github.com/philiplinden/buoy/compare/v0.2.0..v0.3.0) - 2025-07-28
 
 ### 🧪 Experimental
