@@ -5,7 +5,7 @@ use avian3d::{
     parry::shape::ShapeType,
     prelude::*,
 };
-use bevy::math::{Quat, Vec2, Vec3};
+use bevy::prelude::{Component, Quat, Vec2, Vec3};
 
 pub fn sphere_volume(radius: f32) -> f32 {
     (4.0 / 3.0) * PI * f32::powf(radius, 3.0)
@@ -311,7 +311,7 @@ pub fn aabb_volume(aabb: &ColliderAabb) -> f32 {
 /// covers the shapes Buoy actually spawns (spheres and cuboids); will
 /// replace `Collider` entirely once the physics integration itself no
 /// longer depends on Avian.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub enum Shape {
     Sphere { radius: f32 },
     Cuboid { half_extents: Vec3 },

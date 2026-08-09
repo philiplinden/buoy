@@ -1,9 +1,9 @@
-use avian3d::prelude::Collider;
 use bevy::{
     math::Isometry3d,
     pbr::wireframe::{WireframeConfig, WireframePlugin},
     prelude::*,
 };
+use buoy_physics::geometry::Shape;
 
 use crate::colors::ColorPalette;
 
@@ -23,23 +23,24 @@ pub(crate) fn plugin(app: &mut App) {
     app.add_systems(Update, draw_colliders);
 }
 
-/// Draws a wireframe outline of each entity's collider shape. Replaces
-/// Avian's `PhysicsDebugPlugin`, which we don't otherwise depend on.
-fn draw_colliders(mut gizmos: Gizmos, colliders: Query<(&GlobalTransform, &Collider)>) {
+/// Draws a wireframe outline of each entity's shape. Replaces Avian's
+/// `PhysicsDebugPlugin`, which we don't otherwise depend on.
+fn draw_colliders(mut gizmos: Gizmos, shapes: Query<(&GlobalTransform, &Shape)>) {
     let color = ColorPalette::LightBase.color();
-    for (transform, collider) in &colliders {
+    for (transform, shape) in &shapes {
         let isometry = Isometry3d::new(transform.translation(), transform.rotation());
-        let shape = collider.shape();
-        if let Some(ball) = shape.as_ball() {
-            gizmos.sphere(isometry, ball.radius, color);
-        } else if let Some(cuboid) = shape.as_cuboid() {
-            let half_extents: Vec3 = cuboid.half_extents.into();
-            gizmos.cuboid(
-                Transform::from_translation(transform.translation())
-                    .with_rotation(transform.rotation())
-                    .with_scale(half_extents * 2.0),
-                color,
-            );
+        match *shape {
+            Shape::Sphere { radius } => {
+                gizmos.sphere(isometry, radius, color);
+            }
+            Shape::Cuboid { half_extents } => {
+                gizmos.cuboid(
+                    Transform::from_translation(transform.translation())
+                        .with_rotation(transform.rotation())
+                        .with_scale(half_extents * 2.0),
+                    color,
+                );
+            }
         }
     }
 }

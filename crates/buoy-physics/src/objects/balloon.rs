@@ -1,12 +1,11 @@
-use avian3d::prelude::*;
 use bevy::asset::Asset;
 use bevy::prelude::*;
 use bevy::reflect::TypePath;
 use serde::Deserialize;
 
-use buoy_physics::{
-    forces::DragCoefficient,
-    geometry::sphere_radius_from_volume,
+use crate::{
+    forces::{DragCoefficient, Mass as BodyMass, Velocity},
+    geometry::{sphere_radius_from_volume, Shape},
     ideal_gas::{GasSpecies, IdealGas},
 };
 use uom::si::{
@@ -14,7 +13,6 @@ use uom::si::{
     thermodynamic_temperature::kelvin,
     pressure::pascal,
     mass::kilogram,
-    mass_density::kilogram_per_cubic_meter,
     volume::cubic_meter,
 };
 
@@ -41,14 +39,15 @@ impl Balloon {
             Mass::new::<kilogram>(1.0),
         );
         let radius = sphere_radius_from_volume(lift_gas.volume().get::<cubic_meter>());
-        let density = lift_gas.density().get::<kilogram_per_cubic_meter>();
+        let mass_kg = lift_gas.mass.get::<kilogram>();
         BalloonBundle {
             name: Name::new("Balloon"),
             balloon,
             lift_gas,
             transform: Transform::from_xyz(0.0, radius * 2.0, 0.0),
-            collider: Collider::sphere(radius),
-            collider_density: ColliderDensity(density),
+            shape: Shape::Sphere { radius },
+            mass: BodyMass(mass_kg),
+            velocity: Velocity::default(),
             drag_coefficient: DragCoefficient(0.47),
         }
     }
@@ -61,14 +60,15 @@ impl Balloon {
             Mass::new::<kilogram>(config.lift_gas_mass),
         );
         let radius = sphere_radius_from_volume(lift_gas.volume().get::<cubic_meter>());
-        let density = lift_gas.density().get::<kilogram_per_cubic_meter>();
+        let mass_kg = lift_gas.mass.get::<kilogram>();
         BalloonBundle {
             name: Name::new("Balloon"),
             balloon,
             lift_gas,
             transform: Transform::from_xyz(0.0, radius * 2.0, 0.0),
-            collider: Collider::sphere(radius),
-            collider_density: ColliderDensity(density),
+            shape: Shape::Sphere { radius },
+            mass: BodyMass(mass_kg),
+            velocity: Velocity::default(),
             drag_coefficient: DragCoefficient(config.drag_coefficient),
         }
     }
@@ -80,7 +80,8 @@ pub struct BalloonBundle {
     balloon: Balloon,
     lift_gas: IdealGas,
     transform: Transform,
-    collider: Collider,
-    collider_density: ColliderDensity,
+    shape: Shape,
+    mass: BodyMass,
+    velocity: Velocity,
     drag_coefficient: DragCoefficient,
 }

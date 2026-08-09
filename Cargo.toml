@@ -3,12 +3,10 @@ resolver = "2" # Important for Bevy
 members = [
     "crates/buoy-physics",
     "crates/buoy-ui",
-    "crates/buoy-runtime",
 ]
 
 default-members = [
     "crates/buoy-physics",
-    "crates/buoy-runtime",
 ]
 
 [workspace.package]

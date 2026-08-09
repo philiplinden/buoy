@@ -5,7 +5,6 @@
 //! - https://www.translatorscafe.com/unit-converter/en-US/calculator/altitude
 //! - https://www.grc.nasa.gov/WWW/K-12/airplane/atmosmet.html
 
-use avian3d::prelude::{Position, RigidBody};
 use bevy::prelude::*;
 use uom::si::{
     f32::*,

@@ -2,7 +2,7 @@
 
 use std::time::Duration;
 use bevy::{app::ScheduleRunnerPlugin, prelude::*};
-use buoy_runtime::BuoyDefaultPlugins;
+use buoy_physics::BuoyDefaultPlugins;
 
 fn main() {
     App::new()

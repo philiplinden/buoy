@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use buoy_runtime::RuntimeState;
+use buoy_physics::RuntimeState;
 
 pub fn plugin(app: &mut App) {
     app.init_resource::<KeyBindingsConfig>();

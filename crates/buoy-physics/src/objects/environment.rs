@@ -1,9 +1,11 @@
-use avian3d::prelude::*;
 use bevy::prelude::*;
+use crate::geometry::Shape;
 
-/// Component marking a ground plane in the simulation.
+/// Component marking a ground plane in the simulation. Has no `Mass` or
+/// `Velocity`, so it's never picked up by the physics integrator - it just
+/// sits there.
 #[derive(Component, Debug, Clone, Copy)]
-#[require(Transform, RigidBody, Collider)]
+#[require(Transform)]
 pub struct GroundPlane {
     pub extents: (f32, f32),
     pub thickness: f32,
@@ -19,9 +21,9 @@ impl Default for GroundPlane {
 }
 
 impl GroundPlane {
-    pub fn generate_collider(&self) -> Collider {
+    pub fn generate_shape(&self) -> Shape {
         let half_extents = Vec3::new(self.extents.0 / 2.0, self.thickness / 2.0, self.extents.1 / 2.0);
-        Collider::cuboid(half_extents.x, half_extents.y, half_extents.z)
+        Shape::Cuboid { half_extents }
     }
 }
 
@@ -31,8 +33,7 @@ pub struct GroundPlaneBundle {
     name: Name,
     ground_plane: GroundPlane,
     transform: Transform,
-    collider: Collider,
-    rigid_body: RigidBody,
+    shape: Shape,
 }
 
 impl GroundPlane {
@@ -43,13 +44,12 @@ impl GroundPlane {
             ground_plane,
             // make the top surface flush with the origin
             transform: Transform::from_xyz(0.0, -ground_plane.thickness / 2.0, 0.0),
-            collider: ground_plane.generate_collider(),
-            rigid_body: RigidBody::Static,
+            shape: ground_plane.generate_shape(),
         }
     }
 }
 
-/// System to update the collider of a ground plane when its extents change.
+/// System to update the shape of a ground plane when its extents change.
 pub fn update_ground_plane_collider(
     mut commands: Commands,
     mut query: Query<(Entity, &GroundPlane), Changed<GroundPlane>>, // This filter makes the system run only when GroundPlane changes
@@ -61,8 +61,7 @@ pub fn update_ground_plane_collider(
         {
             commands
                 .entity(entity)
-                .remove::<Collider>()
-                .insert(ground_plane.generate_collider());
+                .insert(ground_plane.generate_shape());
         }
     }
 }
