@@ -28,7 +28,7 @@ bevy = { workspace = true, features = [
     "tonemapping_luts",
     "x11",
 ] }
-avian3d = { workspace = true, optional = true, features = ["bevy_picking"] }
+avian3d = { workspace = true, optional = true }
 bevy_egui = { version = "0.35.0" }
 bevy_common_assets = { workspace = true }
 bevy-inspector-egui = { version = "0.32.0", optional = true, features = [
@@ -41,8 +41,7 @@ dev = [
     "buoy-physics/dev",
     "buoy-runtime/dev",
     "bevy/dynamic_linking",
-    "avian3d/diagnostic_ui",
-    "avian3d/debug-plugin",
+    "dep:avian3d",
     "bevy/bevy_dev_tools",
     "bevy-inspector-egui",
 ]
