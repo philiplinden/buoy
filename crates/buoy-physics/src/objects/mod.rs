@@ -1,5 +1,5 @@
 pub mod balloon;
-pub mod environment;
+pub mod ground;
 
 pub use balloon::Balloon;
-pub use environment::GroundPlane;
+pub use ground::GroundPlane;
