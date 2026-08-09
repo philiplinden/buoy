@@ -1,6 +1,6 @@
 [package]
 name = "buoy-physics"
-version = "0.3.0"
+version = "0.4.0"
 description = "Physics engine and runtime for the Buoy simulator"
 edition = { workspace = true }
 authors = { workspace = true }
