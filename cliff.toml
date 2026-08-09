@@ -15,7 +15,7 @@ features_always_bump_minor = true
 # Bump major version for breaking changes
 breaking_always_bump_major = true
 # Initial version for new repositories
-initial_tag = "0.1.0"
+initial_tag = "v0.1.0"
 
 [changelog]
 # A Tera template to be rendered as the changelog's footer.

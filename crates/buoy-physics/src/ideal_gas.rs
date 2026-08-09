@@ -3,7 +3,6 @@
 
 use std::ops::{Div, Mul};
 
-use avian3d::math::Scalar;
 use bevy::{asset::Asset, prelude::*, reflect::TypePath};
 use serde::Deserialize;
 use uom::si::{

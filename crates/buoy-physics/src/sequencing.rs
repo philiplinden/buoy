@@ -24,7 +24,6 @@
 //! SimulationPipeline::add_system_to_stage(&mut app, SimulationPipeline::Input, input_system);
 //! ```
 
-use avian3d::prelude::*;
 use bevy::prelude::*;
 
 use crate::RuntimeState;
@@ -48,17 +47,17 @@ pub(crate) fn plugin(app: &mut App) {
     );
 }
 
-pub fn pause(mut physics_time: ResMut<Time<Physics>>, mut next_state: ResMut<NextState<RuntimeState>>) {
-    physics_time.as_mut().pause();
+pub fn pause(mut time: ResMut<Time<Virtual>>, mut next_state: ResMut<NextState<RuntimeState>>) {
+    time.pause();
     debug!("pausing physics time");
     next_state.set(RuntimeState::Stopped);
 }
 
 pub fn unpause(
-    mut physics_time: ResMut<Time<Physics>>,
+    mut time: ResMut<Time<Virtual>>,
     mut next_state: ResMut<NextState<RuntimeState>>,
 ) {
-    physics_time.as_mut().unpause();
+    time.unpause();
     debug!("unpausing physics time");
     next_state.set(RuntimeState::Running);
 }

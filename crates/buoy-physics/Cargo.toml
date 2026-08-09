@@ -1,16 +1,22 @@
 [package]
 name = "buoy-physics"
-version = "0.3.0"
-description = "Physics for buoyancy simulation"
+version = "0.4.0"
+description = "Physics engine and runtime for the Buoy simulator"
 edition = { workspace = true }
 authors = { workspace = true }
 license = { workspace = true }
+default-run = "buoy"
+
+[[bin]]
+name = "buoy"
+path = "bin/main.rs"
 
 [dependencies]
-bevy = { workspace = true }
-avian3d = { workspace = true }
+bevy = { workspace = true, features = ["bevy_asset"] }
 uom = { workspace = true }
 serde = { workspace = true }
+bevy_common_assets = { workspace = true }
+bevy_repl = { version = "0.3.0", features = ["derive"] }
 
 [features]
 default = [
@@ -19,7 +25,6 @@ default = [
 dev = [
     "bevy/dynamic_linking",
     "bevy/bevy_debug_stepping",
-    "avian3d/bevy_diagnostic",
 ]
 
 

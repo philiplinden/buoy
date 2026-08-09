@@ -7,9 +7,22 @@ Rust.
 
 The repository is structured as follows:
 
-- `crates/buoy-runtime`: Runtime code. This is what dispatches the simulation loop, sets up the physics, UI, renderer.
-- `crates/buoy-physics`: Physics simulation code.
+- `crates/buoy-physics`: Physics simulation and runtime code. This dispatches the simulation loop and sets up the physics.
 - `crates/buoy-ui`: UI code.
+
+## Running
+
+Run the headless simulation:
+
+```sh
+cargo run --bin buoy
+```
+
+Run the simulation with the UI:
+
+```sh
+cargo run --bin buoy-ui
+```
 
 ## License
 

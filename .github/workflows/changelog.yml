@@ -26,6 +26,10 @@ jobs:
           # Otherwise, you might end up getting empty changelogs or git ref
           # errors depending on arguments passed to git-cliff.
           fetch-depth: 0
+          # fetch-depth: 0 does NOT imply tags are fetched. Without this,
+          # git-cliff sees zero tags and thinks it's bootstrapping a
+          # brand-new repo.
+          fetch-tags: true
 
       - name: Generate an incremental changelog
         uses: orhun/git-cliff-action@main
@@ -41,7 +45,12 @@ jobs:
         id: full_changelog
         with:
           config: cliff.toml
-          args: --latest --no-exec --github-repo ${{ github.repository }}
+          # No --latest here: this step regenerates the WHOLE changelog from
+          # full history every run. --latest restricts processing to only the
+          # most recently *tagged* release, and since the output overwrites
+          # CHANGELOG.md wholesale (no --prepend), that previously wiped out
+          # every earlier release section on each run.
+          args: --no-exec --github-repo ${{ github.repository }}
         env:
           OUTPUT: CHANGELOG.md
 
